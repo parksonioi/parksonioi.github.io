@@ -1519,6 +1519,16 @@ st += `\n\n<div style="margin-top:1.2rem;display:flex;justify-content:center;">
     </button>
 </div>`;
 statusDiv.innerHTML = st;
+                            // Aktifkan butang Download
+let btnDl = document.getElementById("btnDownloadReport");
+if(btnDl){
+    btnDl.disabled = false;
+    btnDl.style.opacity = '1';
+    btnDl.style.pointerEvents = 'auto';
+    btnDl.style.cursor = 'pointer';
+    btnDl.style.background = 'linear-gradient(180deg,#0a84ff 0%,#0066cc 100%)';
+    btnDl.style.boxShadow = '0 1px 0 rgba(255,255,255,.25) inset,0 -1px 0 rgba(0,0,0,.15) inset,0 4px 12px rgba(10,132,255,.35),0 1px 3px rgba(0,0,0,.1)';
+}
                             // Auto-modal dibuang — user kena tekan butang manual
                             resolve(processedData);
                         } catch(err){
@@ -2275,6 +2285,18 @@ statusDiv.innerHTML = st;
             async function handleFileUpload(file){
                 if(!file||isProcessing)return;
                 isProcessing=true;
+                async function handleFileUpload(file){
+    if(!file||isProcessing)return;
+    isProcessing=true;
+
+    // Reset butang Download
+    let btnDl = document.getElementById("btnDownloadReport");
+    if(btnDl){
+        btnDl.disabled = true;
+        btnDl.style.opacity = '.45';
+        btnDl.style.pointerEvents = 'none';
+        btnDl.style.cursor = 'default';
+    }
                 let sd=document.getElementById("status"), fn=document.getElementById("fileNameDisplay"), fs=document.getElementById("fileSizeDisplay");
                 fn.textContent=`📄 ${file.name}`; fs.textContent=`${(file.size/1024).toFixed(1)} KB`; sd.innerHTML=`<span class="processing-text"><span class="spinner"></span> Processing ${file.name}...</span>`;
                 try{ await processData(file); } catch(err){ sd.innerHTML=`◆ <span class="error">ERROR:</span> ${err.message}`; } finally{ isProcessing=false; }
@@ -2344,7 +2366,46 @@ statusDiv.innerHTML = st;
                             <div class="group-count" id="groupCount">0 / 10 groups</div>
                         </div>
                     </div>
-
+<!-- ===== BUTANG DOWNLOAD iOS STYLE ===== -->
+<div style="display:flex;justify-content:center;margin:1.2rem 0 1.5rem;">
+    <button id="btnDownloadReport" onclick="showDownloadModal()" disabled
+        style="
+            -webkit-appearance:none;
+            appearance:none;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:.6rem;
+            padding:.85rem 2.4rem;
+            border:none;
+            border-radius:999px;
+            font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
+            font-size:.95rem;
+            font-weight:600;
+            letter-spacing:-.01em;
+            color:#fff;
+            background:linear-gradient(180deg,#0a84ff 0%,#0066cc 100%);
+            box-shadow:
+                0 1px 0 rgba(255,255,255,.25) inset,
+                0 -1px 0 rgba(0,0,0,.15) inset,
+                0 4px 12px rgba(10,132,255,.35),
+                0 1px 3px rgba(0,0,0,.1);
+            cursor:pointer;
+            transition:all .2s cubic-bezier(.4,0,.2,1);
+            user-select:none;
+            -webkit-tap-highlight-color:transparent;
+            opacity:.45;
+            pointer-events:none;
+        "
+        onmouseover="if(!this.disabled){this.style.transform='scale(1.03)';this.style.boxShadow='0 1px 0 rgba(255,255,255,.25) inset,0 -1px 0 rgba(0,0,0,.15) inset,0 6px 20px rgba(10,132,255,.45),0 2px 6px rgba(0,0,0,.12)'}"
+        onmouseout="if(!this.disabled){this.style.transform='scale(1)';this.style.boxShadow='0 1px 0 rgba(255,255,255,.25) inset,0 -1px 0 rgba(0,0,0,.15) inset,0 4px 12px rgba(10,132,255,.35),0 1px 3px rgba(0,0,0,.1)'}"
+        onmousedown="if(!this.disabled){this.style.transform='scale(.97)';this.style.filter='brightness(.95)'}"
+        onmouseup="if(!this.disabled){this.style.transform='scale(1.03)';this.style.filter='brightness(1)'}"
+    >
+        <span style="font-size:1.15rem;line-height:1;">⬇️</span>
+        <span>Download Report</span>
+    </button>
+</div>
                     <div class="info-badge">
                         <span class="icon">📋</span>
                         <div class="text"><strong>Complete Report Package</strong> — All files will be generated automatically:</div>
