@@ -1481,10 +1481,45 @@
                                 st = `✅ <span class="success">Processing complete!</span> No failed lines detected.`;
                             }
                             st += `\n\n📊 <strong>Report Summary:</strong>\n   • ${allDepts.length} departments processed\n   • ${totalBrands} brands captured\n   • ${totalFailed} failed lines\n   • ${allFiles.length} TXT files generated`;
-                            statusDiv.innerHTML = st;
-                            if(totalFailed === 0){
-                                setTimeout(showDownloadModal, 600);
-                            }
+st += `\n\n<div style="margin-top:1.2rem;display:flex;justify-content:center;">
+    <button onclick="showDownloadModal()" 
+        style="
+            -webkit-appearance:none;
+            appearance:none;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:.6rem;
+            padding:.85rem 2.2rem;
+            border:none;
+            border-radius:999px;
+            font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;
+            font-size:.95rem;
+            font-weight:600;
+            letter-spacing:-.01em;
+            color:#fff;
+            background:linear-gradient(180deg,#0a84ff 0%,#0066cc 100%);
+            box-shadow:
+                0 1px 0 rgba(255,255,255,.25) inset,
+                0 -1px 0 rgba(0,0,0,.15) inset,
+                0 4px 12px rgba(10,132,255,.35),
+                0 1px 3px rgba(0,0,0,.1);
+            cursor:pointer;
+            transition:all .2s cubic-bezier(.4,0,.2,1);
+            user-select:none;
+            -webkit-tap-highlight-color:transparent;
+        "
+        onmouseover="this.style.transform='scale(1.03)';this.style.boxShadow='0 1px 0 rgba(255,255,255,.25) inset,0 -1px 0 rgba(0,0,0,.15) inset,0 6px 20px rgba(10,132,255,.45),0 2px 6px rgba(0,0,0,.12)'"
+        onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 1px 0 rgba(255,255,255,.25) inset,0 -1px 0 rgba(0,0,0,.15) inset,0 4px 12px rgba(10,132,255,.35),0 1px 3px rgba(0,0,0,.1)'"
+        onmousedown="this.style.transform='scale(.97)';this.style.filter='brightness(.95)'"
+        onmouseup="this.style.transform='scale(1.03)';this.style.filter='brightness(1)'"
+    >
+        <span style="font-size:1.1rem;line-height:1;">􀉪</span>
+        <span>Print Report</span>
+    </button>
+</div>`;
+statusDiv.innerHTML = st;
+                            // Auto-modal dibuang — user kena tekan butang manual
                             resolve(processedData);
                         } catch(err){
                             statusDiv.innerHTML = `◆ ERROR: ${err.message}`;
