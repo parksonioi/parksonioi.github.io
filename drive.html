@@ -1,167 +1,220 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌌 Black Hole Wraplink</title>
-  <link rel="stylesheet" href="/info-box.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌌 Black Hole Wraplink</title>
+<link rel="stylesheet" href="/info-box.css">
 <script src="/notes.js" defer></script>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      background: #0a0a0a;
-      font-family: Arial, sans-serif;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container { max-width: 900px; width:100%; }
-    .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px; }
-    .blackhole {
-      width:180px; height:180px; border-radius:50%;
-      background: radial-gradient(circle, #000 30%, #2a1a3a 70%, #9c27b0);
-      box-shadow: 0 0 60px rgba(156,39,176,0.4);
-      cursor: pointer;
-      margin: 0 auto 20px;
-      transition: transform 0.3s;
-      animation: pulse 3s infinite;
-      position:relative;
-    }
-    .blackhole:hover { transform: scale(1.05); }
-    .blackhole:active { transform: scale(0.95); }
-    @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.02);} }
-    .accretion {
-      position:absolute; top:50%; left:50%; width:120%; height:40%;
-      transform:translate(-50%,-50%) rotateX(75deg);
-      background: radial-gradient(ellipse, rgba(156,39,176,0.3) 0%, rgba(33,150,243,0.2) 40%, transparent 70%);
-      border-radius:50%;
-      animation: spin 8s linear infinite;
-      pointer-events:none;
-    }
-    @keyframes spin { 0%{transform:translate(-50%,-50%) rotateX(75deg) rotate(0deg);} 100%{transform:translate(-50%,-50%) rotateX(75deg) rotate(360deg);} }
-    .status-panel {
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px;
-      padding: 20px;
-      margin: 20px 0;
-      backdrop-filter:blur(10px);
-      border:1px solid rgba(156,39,176,0.2);
-    }
-    .progress { height:6px; background:#333; border-radius:10px; overflow:hidden; margin:10px 0; }
-    .progress-fill { height:100%; background: linear-gradient(90deg,#9c27b0,#2196f3); transition: width 0.5s; }
-    .status-row { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:10px; }
-    .recent-log {
-      background: rgba(255,255,255,0.03);
-      border-radius:10px; padding:10px; margin-top:15px;
-      border-left:3px solid #9c27b0;
-    }
-    .recent-log h4 { font-size:13px; color:#888; margin-bottom:8px; }
-    .recent-log-item { font-size:13px; color:#ccc; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
-    .recent-log-item span { color:#666; margin-left:10px; font-size:11px; }
-    .breadcrumb { font-size:14px; color:#aaa; margin-bottom:15px; }
-    .breadcrumb span { cursor:pointer; color:#9c27b0; }
-    .breadcrumb span:hover { text-decoration:underline; }
-    .actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px; }
-    .file-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px,1fr));
-      gap: 12px;
-    }
-    .file-item {
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      position: relative;
-      border:1px solid rgba(255,255,255,0.05);
-      transition:0.3s;
-      cursor: pointer;
-    }
-    .file-item:hover { background:rgba(255,255,255,0.08); transform:translateY(-2px); }
-    .file-item .delete { position:absolute; top:5px; right:8px; background:none; border:none; color:#f44336; cursor:pointer; font-size:14px; }
-    .file-item .actions-row { display:flex; gap:6px; justify-content:center; margin-top:6px; flex-wrap:wrap; }
-    .btn-small { background:#333; border:none; color:white; padding:2px 8px; border-radius:4px; cursor:pointer; font-size:11px; }
-    .btn-small:hover { background:#555; }
-    .btn-small.primary { background:#9c27b0; }
-    .btn-small.primary:hover { background:#7b1fa2; }
-    .file-icon { font-size:32px; }
-    .file-name { font-size:12px; word-break:break-all; color:#ddd; margin-top:4px; }
-    .file-size { font-size:10px; color:#888; }
-    .file-expiry { font-size:10px; margin-top:4px; }
-    .file-expiry.urgent { color:#f44336; }
-    .file-expiry.warning { color:#ff9800; }
-    .file-expiry.safe { color:#4caf50; }
-    .folder-item { border-color: rgba(33,150,243,0.3); }
-    .folder-item .file-icon { color:#2196f3; }
-    .toast {
-      position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px);
-      background:rgba(20,20,40,0.95); padding:12px 24px; border-radius:12px;
-      border:1px solid #9c27b0; opacity:0; transition:0.5s; z-index:1000;
-      backdrop-filter:blur(10px); max-width:90%; text-align:center;
-    }
-    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-    .toast.success { border-color:#4caf50; }
-    .toast.error { border-color:#f44336; }
-    .btn {
-      padding:8px 20px; border:none; border-radius:8px;
-      background:#9c27b0; color:#fff; cursor:pointer; font-weight:600;
-      transition:0.3s;
-    }
-    .btn:hover { transform:translateY(-2px); box-shadow:0 4px 20px rgba(156,39,176,0.4); }
-    .btn-secondary { background:rgba(255,255,255,0.1); }
-    input[type=file] { display:none; }
-    .modal {
-      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:2000;
-      justify-content:center; align-items:center;
-    }
-    .modal.active { display:flex; }
-    .modal-content {
-      background:#1a1a2e; border-radius:20px; padding:30px; max-width:400px; width:90%;
-      border:1px solid rgba(156,39,176,0.3);
-    }
-    .modal-title { font-size:20px; margin-bottom:20px; }
-    .modal input { width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); color:#fff; font-size:14px; }
-    .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:15px; }
-    .upload-overlay {
-      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.7); backdrop-filter:blur(5px); z-index:1500;
-      justify-content:center; align-items:center; flex-direction:column; gap:15px;
-    }
-    .upload-overlay.active { display:flex; }
-    .upload-spinner { width:50px; height:50px; border:4px solid rgba(156,39,176,0.2); border-top:4px solid #9c27b0; border-radius:50%; animation:spin 1s linear infinite; }
-    @keyframes spin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
-    .upload-text { color:#fff; font-size:16px; }
-    .empty-state { grid-column:1/-1; text-align:center; color:#666; padding:40px; }
-    .empty-state .icon { font-size:60px; }
-    @media (max-width:600px) {
-      .blackhole { width:140px; height:140px; }
-      .file-grid { grid-template-columns:repeat(auto-fill, minmax(140px,1fr)); }
-    }
-  </style>
+<style>
+/* ===== BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0a0a0a;font-family:Arial,sans-serif;color:#fff;
+  display:flex;justify-content:center;min-height:100vh;padding:20px;
+}
+.container{max-width:900px;width:100%}
+
+/* ===== HEADER ===== */
+.header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.header h1{font-size:24px}
+.header h1 span{font-size:14px;color:#888}
+.user-badge{font-size:12px;color:#888;background:rgba(255,255,255,.05);padding:4px 12px;border-radius:12px}
+
+/* ===== BLACKHOLE ===== */
+.blackhole{
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,#000 30%,#2a1a3a 70%,#9c27b0);
+  box-shadow:0 0 60px rgba(156,39,176,.4);
+  cursor:pointer;margin:0 auto 20px;
+  transition:transform .3s, box-shadow .3s;
+  animation:pulse 3s infinite;position:relative;
+}
+.blackhole:hover{transform:scale(1.05)}
+.blackhole:active{transform:scale(.95)}
+.blackhole.dragover{
+  transform:scale(1.15);
+  box-shadow:0 0 100px rgba(156,39,176,.9),0 0 40px rgba(33,150,243,.6);
+}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.accretion{
+  position:absolute;top:50%;left:50%;width:120%;height:40%;
+  transform:translate(-50%,-50%) rotateX(75deg);
+  background:radial-gradient(ellipse,rgba(156,39,176,.3) 0%,rgba(33,150,243,.2) 40%,transparent 70%);
+  border-radius:50%;animation:spin 8s linear infinite;pointer-events:none;
+}
+@keyframes spin{
+  0%{transform:translate(-50%,-50%) rotateX(75deg) rotate(0deg)}
+  100%{transform:translate(-50%,-50%) rotateX(75deg) rotate(360deg)}
+}
+
+/* ===== STATUS PANEL ===== */
+.status-panel{
+  background:rgba(255,255,255,.05);border-radius:16px;padding:20px;
+  margin:20px 0;backdrop-filter:blur(10px);
+  border:1px solid rgba(156,39,176,.2);
+}
+.progress{height:6px;background:#333;border-radius:10px;overflow:hidden;margin:10px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#9c27b0,#2196f3);transition:width .5s}
+.status-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:10px}
+
+/* ===== RECENT LOG ===== */
+.recent-log{
+  background:rgba(255,255,255,.03);border-radius:10px;
+  padding:10px;margin-top:15px;border-left:3px solid #9c27b0;
+}
+.recent-log h4{font-size:13px;color:#888;margin-bottom:8px}
+.recent-log-item{font-size:13px;color:#ccc;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.recent-log-item span{color:#666;margin-left:10px;font-size:11px}
+
+/* ===== BREADCRUMB ===== */
+.breadcrumb{font-size:14px;color:#aaa;margin-bottom:15px}
+.breadcrumb span{cursor:pointer;color:#9c27b0}
+.breadcrumb span:hover{text-decoration:underline}
+
+/* ===== ACTIONS ===== */
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+
+/* ===== FILE GRID ===== */
+.file-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.file-item{
+  background:rgba(255,255,255,.05);border-radius:12px;padding:12px;
+  text-align:center;position:relative;
+  border:1px solid rgba(255,255,255,.05);transition:.3s;cursor:pointer;
+}
+.file-item:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
+.file-item .delete{
+  position:absolute;top:5px;right:8px;
+  background:none;border:none;color:#f44336;cursor:pointer;font-size:14px;
+}
+.file-item .actions-row{display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.btn-small{
+  background:#333;border:none;color:#fff;padding:2px 8px;
+  border-radius:4px;cursor:pointer;font-size:11px;
+}
+.btn-small:hover{background:#555}
+.btn-small.primary{background:#9c27b0}
+.btn-small.primary:hover{background:#7b1fa2}
+.file-icon{font-size:32px}
+.file-name{font-size:12px;word-break:break-all;color:#ddd;margin-top:4px}
+.file-size{font-size:10px;color:#888}
+.file-expiry{font-size:10px;margin-top:4px}
+.file-expiry.urgent{color:#f44336}
+.file-expiry.warning{color:#ff9800}
+.file-expiry.safe{color:#4caf50}
+.folder-item{border-color:rgba(33,150,243,.3)}
+.folder-item .file-icon{color:#2196f3}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%) translateY(100px);
+  background:rgba(20,20,40,.95);padding:12px 24px;border-radius:12px;
+  border:1px solid #9c27b0;opacity:0;transition:.5s;z-index:3000;
+  backdrop-filter:blur(10px);max-width:90%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:#4caf50}
+.toast.error{border-color:#f44336}
+
+/* ===== BUTTONS ===== */
+.btn{
+  padding:8px 20px;border:none;border-radius:8px;background:#9c27b0;
+  color:#fff;cursor:pointer;font-weight:600;transition:.3s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(156,39,176,.4)}
+.btn-secondary{background:rgba(255,255,255,.1)}
+input[type=file]{display:none}
+
+/* ===== MODAL ===== */
+.modal{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(5px);
+  z-index:2000;justify-content:center;align-items:center;
+}
+.modal.active{display:flex}
+.modal-content{
+  background:#1a1a2e;border-radius:20px;padding:30px;max-width:400px;width:90%;
+  border:1px solid rgba(156,39,176,.3);
+}
+.modal-title{font-size:20px;margin-bottom:20px}
+.modal input{
+  width:100%;padding:12px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(0,0,0,.3);color:#fff;font-size:14px;
+}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:15px}
+
+/* ===== UPLOAD OVERLAY ===== */
+.upload-overlay{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.75);backdrop-filter:blur(5px);
+  z-index:2500;justify-content:center;align-items:center;padding:20px;
+}
+.upload-overlay.active{display:flex}
+.upload-panel{
+  background:#1a1a2e;border-radius:20px;padding:24px;max-width:520px;width:100%;
+  border:1px solid rgba(156,39,176,.3);
+}
+.upload-title{font-size:18px;margin-bottom:12px;text-align:center}
+.upload-subtitle{font-size:12px;color:#888;text-align:center;margin-bottom:12px}
+.upload-overall{height:8px;background:#333;border-radius:10px;overflow:hidden;margin:12px 0}
+.upload-overall-fill{height:100%;background:linear-gradient(90deg,#9c27b0,#2196f3);transition:width .3s}
+.upload-list{max-height:240px;overflow-y:auto;margin:12px 0;font-size:12px}
+.upload-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);color:#ccc;
+}
+.upload-item .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
+.upload-item .size{font-size:10px;color:#666;margin-right:8px;flex-shrink:0}
+.upload-item .state{margin-left:8px;font-size:11px;flex-shrink:0}
+.upload-item .state.pending{color:#888}
+.upload-item .state.uploading{color:#2196f3}
+.upload-item .state.success{color:#4caf50}
+.upload-item .state.error{color:#f44336}
+.upload-item .state.retry{color:#ff9800}
+.upload-item .state.rejected{color:#f44336;font-weight:bold}
+.upload-actions{display:flex;gap:10px;justify-content:center;margin-top:12px}
+
+/* ===== REJECTED WARNING ===== */
+.rejected-box{
+  background:rgba(244,67,54,.1);border:1px solid rgba(244,67,54,.4);
+  border-radius:10px;padding:10px;margin:10px 0;font-size:12px;color:#ffab91;
+}
+.rejected-box strong{color:#f44336}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{grid-column:1/-1;text-align:center;color:#666;padding:40px}
+.empty-state .icon{font-size:60px}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:600px){
+  .blackhole{width:140px;height:140px}
+  .file-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+</style>
 </head>
 <body>
 <div class="container">
-  <!-- Header -->
+
+  <!-- HEADER -->
   <div class="header">
-    <h1 style="font-size:24px;">🌌 Black Hole <span style="font-size:14px;color:#888;">Wraplink</span></h1>
-    <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-      <span style="font-size:12px; color:#888; background:rgba(255,255,255,0.05); padding:4px 12px; border-radius:12px;" id="userIdDisplay">👤 user</span>
+    <h1>🌌 Black Hole <span>Wraplink</span></h1>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="user-badge" id="userIdDisplay">👤 user</span>
       <button class="btn btn-secondary" id="refreshBtn">🔄</button>
     </div>
   </div>
 
-  <!-- Black Hole -->
-  <div class="blackhole" id="blackhole" title="Klik untuk upload">
+  <!-- BLACKHOLE -->
+  <div class="blackhole" id="blackhole" title="Klik atau drop fail untuk upload">
     <div class="accretion"></div>
   </div>
   <input type="file" id="fileInput" multiple>
 
-  <!-- Status Panel -->
+  <!-- STATUS PANEL -->
   <div class="status-panel">
-    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:5px;">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;">
       <span>📦 Storan Digunakan</span>
       <span id="storageText">0 GB / 10 GB</span>
     </div>
@@ -169,31 +222,30 @@
     <div class="status-row">
       <span id="statusText">✅ Available</span>
       <span id="fileCount">0 item</span>
-      <span id="expiryInfo" style="font-size:12px; color:#888;">⏳ 15 hari auto-delete</span>
+      <span id="expiryInfo" style="font-size:12px;color:#888;">⏳ 15 hari auto-delete · Max 50MB/fail</span>
     </div>
-    <!-- Recent Uploads Log -->
     <div class="recent-log" id="recentLog">
       <h4>🌀 Log Teleportasi (5 Terbaru)</h4>
-      <div id="recentItems"><span style="color:#666; font-size:13px;">Tiada rekod</span></div>
+      <div id="recentItems"><span style="color:#666;font-size:13px;">Tiada rekod</span></div>
     </div>
   </div>
 
-  <!-- Breadcrumb & Actions -->
-  <div class="breadcrumb" id="breadcrumb"><span onclick="navigateTo('/')">🏠 Root</span></div>
+  <!-- BREADCRUMB + ACTIONS -->
+  <div class="breadcrumb" id="breadcrumb"></div>
   <div class="actions">
     <button class="btn btn-secondary" id="createFolderBtn">📁 Folder Baru</button>
     <button class="btn" id="uploadBtn">📤 Upload</button>
   </div>
 
-  <!-- File Grid -->
+  <!-- FILE GRID -->
   <div class="file-grid" id="fileGrid"></div>
 </div>
 
-<!-- Modal Create Folder -->
+<!-- MODAL FOLDER -->
 <div class="modal" id="folderModal">
   <div class="modal-content">
     <h3 class="modal-title">📁 Cipta Folder Baru</h3>
-    <input type="text" id="folderNameInput" placeholder="Nama folder..." />
+    <input type="text" id="folderNameInput" placeholder="Nama folder...">
     <div class="modal-actions">
       <button class="btn btn-secondary" id="cancelFolderBtn">Batal</button>
       <button class="btn" id="confirmFolderBtn">Cipta</button>
@@ -201,314 +253,468 @@
   </div>
 </div>
 
-<!-- Upload Overlay -->
+<!-- UPLOAD OVERLAY -->
 <div class="upload-overlay" id="uploadOverlay">
-  <div class="upload-spinner"></div>
-  <div class="upload-text" id="uploadText">🌌 Menelan fail...</div>
+  <div class="upload-panel">
+    <div class="upload-title">🌌 Menelan fail...</div>
+    <div class="upload-subtitle" id="uploadSubtitle"></div>
+    <div class="upload-overall"><div class="upload-overall-fill" id="uploadOverallFill" style="width:0%"></div></div>
+    <div id="uploadRejectedBox"></div>
+    <div class="upload-list" id="uploadList"></div>
+    <div class="upload-actions">
+      <button class="btn btn-secondary" id="cancelUploadBtn">Batal</button>
+    </div>
+  </div>
 </div>
 
-<!-- Toast -->
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ============ KONFIGURASI ============
-const API_URL = "https://script.google.com/macros/s/AKfycbwF0BFIgC5R46vwszduddSWoej_SfeSeXmIGc8vtULv1QRweR53py7cYwjg0MncjOUN/exec"; // Ganti dengan URL Google Apps Script
-const USER_ID = "user"; // ID tetap
+(function(){
+  'use strict';
 
-// ============ STATE ============
-let currentPath = '/';
-let allItems = [];
+  /* ================================================================
+     KONFIGURASI
+     ================================================================ */
+  const API_URL = "https://script.google.com/macros/s/AKfycbwF0BFIgC5R46vwszduddSWoej_SfeSeXmIGc8vtULv1QRweR53py7cYwjg0MncjOUN/exec";
+  const USER_ID = "user";
+  const MAX_FILE_SIZE_MB = 50;        // ⬅️ HAD 50MB per fail
+  const MAX_CONCURRENT = 3;           // upload serentak
+  const MAX_RETRY = 2;                // retry jika gagal
+  const REFRESH_INTERVAL_MS = 15000;
 
-// ============ ELEMEN ============
-const blackhole = document.getElementById('blackhole');
-const fileInput = document.getElementById('fileInput');
-const fileGrid = document.getElementById('fileGrid');
-const progressFill = document.getElementById('progressFill');
-const storageText = document.getElementById('storageText');
-const statusText = document.getElementById('statusText');
-const fileCount = document.getElementById('fileCount');
-const toast = document.getElementById('toast');
-const refreshBtn = document.getElementById('refreshBtn');
-const userIdDisplay = document.getElementById('userIdDisplay');
-const uploadOverlay = document.getElementById('uploadOverlay');
-const uploadText = document.getElementById('uploadText');
-const breadcrumb = document.getElementById('breadcrumb');
-const recentItems = document.getElementById('recentItems');
-const createFolderBtn = document.getElementById('createFolderBtn');
-const uploadBtn = document.getElementById('uploadBtn');
-const folderModal = document.getElementById('folderModal');
-const folderNameInput = document.getElementById('folderNameInput');
-const cancelFolderBtn = document.getElementById('cancelFolderBtn');
-const confirmFolderBtn = document.getElementById('confirmFolderBtn');
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-userIdDisplay.textContent = '👤 ' + USER_ID;
+  /* ================================================================
+     STATE
+     ================================================================ */
+  let currentPath = '/';
+  let allItems = [];
+  let isUploading = false;
+  let cancelUpload = false;
 
-// ============ TOAST ============
-function showToast(msg, type) {
-  type = type || 'info';
-  toast.textContent = msg;
-  toast.className = 'toast show ' + type;
-  clearTimeout(toast._t);
-  toast._t = setTimeout(function() {
-    toast.classList.remove('show');
-  }, 4000);
-}
+  /* ================================================================
+     ELEMEN
+     ================================================================ */
+  const $ = id => document.getElementById(id);
+  const blackhole         = $('blackhole');
+  const fileInput         = $('fileInput');
+  const fileGrid          = $('fileGrid');
+  const progressFill      = $('progressFill');
+  const storageText       = $('storageText');
+  const statusText        = $('statusText');
+  const fileCount         = $('fileCount');
+  const toast             = $('toast');
+  const refreshBtn        = $('refreshBtn');
+  const userIdDisplay     = $('userIdDisplay');
+  const uploadOverlay     = $('uploadOverlay');
+  const uploadList        = $('uploadList');
+  const uploadOverallFill = $('uploadOverallFill');
+  const uploadSubtitle    = $('uploadSubtitle');
+  const uploadRejectedBox = $('uploadRejectedBox');
+  const cancelUploadBtn   = $('cancelUploadBtn');
+  const breadcrumb        = $('breadcrumb');
+  const recentItems       = $('recentItems');
+  const createFolderBtn   = $('createFolderBtn');
+  const uploadBtn         = $('uploadBtn');
+  const folderModal       = $('folderModal');
+  const folderNameInput   = $('folderNameInput');
+  const cancelFolderBtn   = $('cancelFolderBtn');
+  const confirmFolderBtn  = $('confirmFolderBtn');
 
-// ============ API ============
-function callAPI(data) {
-  return new Promise(function(resolve, reject) {
-    var callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2,4);
-    var params = new URLSearchParams();
-    params.append('callback', callbackName);
-    params.append('action', data.action);
-    if (data.userId) params.append('userId', data.userId);
-    if (data.fileId) params.append('fileId', data.fileId);
-    if (data.folderPath) params.append('folderPath', data.folderPath);
-    if (data.folderName) params.append('folderName', data.folderName);
-    
-    window[callbackName] = function(response) {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      resolve(response);
-    };
-    
-    var script = document.createElement('script');
-    script.src = API_URL + '?' + params.toString();
-    script.onerror = function() {
-      delete window[callbackName];
-      document.body.removeChild(script);
-      reject(new Error('JSONP request failed'));
-    };
-    document.body.appendChild(script);
-  });
-}
+  userIdDisplay.textContent = '👤 ' + USER_ID;
 
-function callAPIPost(data) {
-  return new Promise(function(resolve, reject) {
-    var formData = new FormData();
-    formData.append('payload', JSON.stringify(data));
-    fetch(API_URL, { method: 'POST', body: formData })
-      .then(function(response) { return response.text(); })
-      .then(function(text) {
-        try { resolve(JSON.parse(text)); }
-        catch(e) { resolve({ success: true, raw: text }); }
-      })
-      .catch(function(e) { reject(e); });
-  });
-}
-
-// ============ NAVIGATION ============
-function navigateTo(path) {
-  currentPath = path;
-  loadData();
-}
-
-function updateBreadcrumb() {
-  var parts = currentPath.split('/').filter(function(p) { return p; });
-  var html = '<span onclick="navigateTo(\'/\')">🏠 Root</span>';
-  var path = '';
-  for (var i = 0; i < parts.length; i++) {
-    path += '/' + parts[i];
-    if (i === parts.length - 1) {
-      html += ' / <span style="color:#9c27b0;">' + parts[i] + '</span>';
-    } else {
-      html += ' / <span onclick="navigateTo(\'' + path + '\')">' + parts[i] + '</span>';
-    }
+  /* ================================================================
+     HELPERS
+     ================================================================ */
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
   }
-  breadcrumb.innerHTML = html;
-}
 
-// ============ LOAD DATA ============
-function loadData() {
-  // Get status
-  callAPI({ action: 'getStatus', userId: USER_ID })
-    .then(function(status) {
-      if (status.success) {
-        var used = status.used || 0;
-        var max = status.max || 10 * 1024 * 1024 * 1024;
-        var percent = (used / max) * 100;
+  function showToast(msg, type){
+    toast.textContent = msg;
+    toast.className = 'toast show ' + (type || 'info');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  function formatBytes(bytes){
+    if(bytes < 1024) return bytes + ' B';
+    if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1024/1024).toFixed(2) + ' MB';
+  }
+
+  /* ================================================================
+     API
+     ================================================================ */
+  function callAPI(data){
+    return new Promise((resolve, reject) => {
+      const cb = 'jsonp_cb_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+      const params = new URLSearchParams();
+      params.append('callback', cb);
+      Object.keys(data).forEach(k => {
+        if(data[k] !== undefined && data[k] !== null) params.append(k, data[k]);
+      });
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => { cleanup(); reject(new Error('Timeout')); }, 30000);
+      function cleanup(){
+        clearTimeout(timeout);
+        if(window[cb]) delete window[cb];
+        if(script.parentNode) script.parentNode.removeChild(script);
+      }
+      window[cb] = function(resp){ cleanup(); resolve(resp); };
+      script.onerror = function(){ cleanup(); reject(new Error('JSONP failed')); };
+      script.src = API_URL + '?' + params.toString();
+      document.body.appendChild(script);
+    });
+  }
+
+  function callAPIPost(data){
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('payload', JSON.stringify(data));
+      fetch(API_URL, { method: 'POST', body: formData })
+        .then(r => r.text())
+        .then(text => {
+          try { resolve(JSON.parse(text)); }
+          catch(e) { resolve({ success: true, raw: text }); }
+        })
+        .catch(reject);
+    });
+  }
+
+  /* ================================================================
+     NAVIGATION
+     ================================================================ */
+  function navigateTo(path){
+    currentPath = path;
+    loadData();
+  }
+
+  function updateBreadcrumb(){
+    const parts = currentPath.split('/').filter(p => p);
+    let html = '<span data-path="/">🏠 Root</span>';
+    let path = '';
+    parts.forEach((part, i) => {
+      path += '/' + part;
+      if(i === parts.length - 1){
+        html += ' / <span style="color:#9c27b0;">' + escapeHtml(part) + '</span>';
+      } else {
+        html += ' / <span data-path="' + escapeHtml(path) + '">' + escapeHtml(part) + '</span>';
+      }
+    });
+    breadcrumb.innerHTML = html;
+    breadcrumb.querySelectorAll('span[data-path]').forEach(el => {
+      el.addEventListener('click', () => navigateTo(el.dataset.path));
+    });
+  }
+
+  /* ================================================================
+     LOAD DATA
+     ================================================================ */
+  function loadData(){
+    if(isUploading) return;
+
+    callAPI({ action: 'getStatus', userId: USER_ID })
+      .then(status => {
+        if(!status.success) return;
+        const used = status.used || 0;
+        const max = status.max || 10 * 1024 * 1024 * 1024;
+        const percent = (used / max) * 100;
         storageText.textContent = (used / 1e9).toFixed(2) + ' GB / ' + (max / 1e9).toFixed(0) + ' GB';
         progressFill.style.width = Math.min(percent, 100) + '%';
-        if (status.isFull) {
+        if(status.isFull){
           statusText.textContent = '🚫 Full';
           statusText.style.color = '#f44336';
-        } else if (percent > 80) {
+        } else if(percent > 80){
           statusText.textContent = '⚠️ Almost Full';
           statusText.style.color = '#ff9800';
         } else {
           statusText.textContent = '✅ Available';
           statusText.style.color = '#4caf50';
         }
-      }
-    })
-    .catch(function(e) {
-      console.error('Status error:', e);
-    });
-  
-  // Get items
-  callAPI({ action: 'list', userId: USER_ID, folderPath: currentPath })
-    .then(function(result) {
-      if (result.success) {
-        allItems = result.items || [];
-        fileCount.textContent = allItems.length + ' item';
-        renderItems(allItems);
-        updateBreadcrumb();
-        updateRecentLog();
-      }
-    })
-    .catch(function(e) {
-      console.error('List error:', e);
-      showToast('❌ Ralat memuat data: ' + e.message, 'error');
-    });
-}
+      })
+      .catch(e => console.error('Status error:', e));
 
-// ============ RENDER ITEMS ============
-function renderItems(items) {
-  if (!items || items.length === 0) {
-    fileGrid.innerHTML = '<div class="empty-state"><div class="icon">🌌</div><h3 style="color:#888; margin-bottom:8px;">Kosong</h3><p style="color:#666; font-size:14px;">Seret fail atau klik lubang hitam</p></div>';
-    return;
+    callAPI({ action: 'list', userId: USER_ID, folderPath: currentPath })
+      .then(result => {
+        if(result.success){
+          allItems = result.items || [];
+          fileCount.textContent = allItems.length + ' item';
+          renderItems(allItems);
+          updateBreadcrumb();
+          updateRecentLog();
+        }
+      })
+      .catch(e => {
+        console.error('List error:', e);
+        showToast('❌ Ralat memuat data: ' + e.message, 'error');
+      });
   }
-  var html = '';
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    if (item.type === 'folder') {
-      var folderPath = currentPath === '/' ? '' : currentPath;
-      html += '<div class="file-item folder-item" onclick="navigateTo(\'' + (folderPath ? folderPath + '/' : '') + item.name + '\')">';
-      html += '  <div class="file-icon">📁</div>';
-      html += '  <div class="file-name">' + item.name + '</div>';
-      html += '  <div style="font-size:10px; color:#888;">Folder</div>';
-      html += '  <button class="delete" onclick="event.stopPropagation(); deleteFolder(\'' + item.name + '\')">✕</button>';
-      html += '</div>';
-    } else {
-      var days = item.daysLeft !== undefined ? item.daysLeft : '?';
-      var expiryClass = 'safe';
-      if (days <= 3) expiryClass = 'urgent';
-      else if (days <= 7) expiryClass = 'warning';
-      var icon = getFileIcon(item.name);
-      html += '<div class="file-item" onclick="previewFile(\'' + item.url + '\')">';
-      html += '  <button class="delete" onclick="event.stopPropagation(); deleteFile(\'' + item.id + '\')">✕</button>';
-      html += '  <div class="file-icon">' + icon + '</div>';
-      html += '  <div class="file-name">' + item.name + '</div>';
-      html += '  <div class="file-size">' + (item.size / 1024).toFixed(1) + ' KB</div>';
-      html += '  <div class="file-expiry ' + expiryClass + '">⏳ ' + days + ' hari</div>';
-      html += '  <div class="actions-row">';
-      html += '    <button class="btn-small primary" onclick="event.stopPropagation(); downloadFile(\'' + item.id + '\',\'' + item.name + '\')">📥</button>';
-      html += '    <button class="btn-small" onclick="event.stopPropagation(); copyLink(\'' + item.url + '\')">🔗</button>';
-      html += '  </div>';
-      html += '</div>';
-    }
-  }
-  fileGrid.innerHTML = html;
-}
 
-function getFileIcon(name) {
-  var ext = name.split('.').pop().toLowerCase();
-  var icons = {
-    'jpg':'🖼️','jpeg':'🖼️','png':'🖼️','gif':'🖼️','webp':'🖼️','svg':'🖼️',
-    'pdf':'📄','doc':'📝','docx':'📝','xls':'📊','xlsx':'📊',
-    'mp3':'🎵','wav':'🎵','mp4':'🎬','avi':'🎬','mov':'🎬',
-    'zip':'📦','rar':'📦','7z':'📦','txt':'📃'
-  };
-  return icons[ext] || '📎';
-}
-
-// ============ RECENT LOG ============
-function updateRecentLog() {
-  var files = [];
-  for (var i = 0; i < allItems.length; i++) {
-    if (allItems[i].type === 'file') {
-      files.push(allItems[i]);
-    }
-  }
-  files.sort(function(a, b) {
-    return new Date(b.date) - new Date(a.date);
-  });
-  var recent = files.slice(0, 5);
-  if (recent.length === 0) {
-    recentItems.innerHTML = '<span style="color:#666; font-size:13px;">Tiada rekod</span>';
-    return;
-  }
-  var html = '';
-  for (var i = 0; i < recent.length; i++) {
-    var d = new Date(recent[i].date);
-    var time = d.toLocaleTimeString();
-    html += '<div class="recent-log-item">📄 ' + recent[i].name + ' <span>' + time + '</span></div>';
-  }
-  recentItems.innerHTML = html;
-}
-
-// ============ UPLOAD ============
-function uploadFiles(files) {
-  if (!files || files.length === 0) return;
-  uploadOverlay.classList.add('active');
-  var successCount = 0;
-  var total = files.length;
-  
-  function processFile(index) {
-    if (index >= total) {
-      uploadOverlay.classList.remove('active');
-      if (successCount > 0) {
-        showToast('✅ ' + successCount + ' fail ditelan!', 'success');
-      }
-      loadData();
+  /* ================================================================
+     RENDER ITEMS
+     ================================================================ */
+  function renderItems(items){
+    if(!items || items.length === 0){
+      fileGrid.innerHTML = '<div class="empty-state"><div class="icon">🌌</div><h3 style="color:#888;margin-bottom:8px;">Kosong</h3><p style="color:#666;font-size:14px;">Seret fail atau klik lubang hitam</p></div>';
       return;
     }
-    
-    var file = files[index];
-    uploadText.textContent = '🌌 Menelan ' + file.name + '... (' + (index+1) + '/' + total + ')';
-    
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var base64 = e.target.result.split(',')[1];
-      var payload = {
+    let html = '';
+    items.forEach(item => {
+      if(item.type === 'folder'){
+        const folderPath = currentPath === '/' ? '' : currentPath;
+        const fullPath = (folderPath ? folderPath + '/' : '') + item.name;
+        html += '<div class="file-item folder-item" data-folder="' + escapeHtml(fullPath) + '">';
+        html += '  <div class="file-icon">📁</div>';
+        html += '  <div class="file-name">' + escapeHtml(item.name) + '</div>';
+        html += '  <div style="font-size:10px;color:#888;">Folder</div>';
+        html += '  <button class="delete" data-delete-folder="' + escapeHtml(item.name) + '">✕</button>';
+        html += '</div>';
+      } else {
+        const days = item.daysLeft !== undefined ? item.daysLeft : '?';
+        const expiryClass = days <= 3 ? 'urgent' : days <= 7 ? 'warning' : 'safe';
+        const icon = getFileIcon(item.name);
+        html += '<div class="file-item" data-preview="' + escapeHtml(item.url) + '">';
+        html += '  <button class="delete" data-delete-file="' + escapeHtml(item.id) + '">✕</button>';
+        html += '  <div class="file-icon">' + icon + '</div>';
+        html += '  <div class="file-name">' + escapeHtml(item.name) + '</div>';
+        html += '  <div class="file-size">' + formatBytes(item.size) + '</div>';
+        html += '  <div class="file-expiry ' + expiryClass + '">⏳ ' + days + ' hari</div>';
+        html += '  <div class="actions-row">';
+        html += '    <button class="btn-small primary" data-download="' + escapeHtml(item.id) + '" data-name="' + escapeHtml(item.name) + '">📥</button>';
+        html += '    <button class="btn-small" data-copy="' + escapeHtml(item.url) + '">🔗</button>';
+        html += '  </div>';
+        html += '</div>';
+      }
+    });
+    fileGrid.innerHTML = html;
+
+    fileGrid.querySelectorAll('[data-folder]').forEach(el => {
+      el.addEventListener('click', e => {
+        if(e.target.closest('button')) return;
+        navigateTo(el.dataset.folder);
+      });
+    });
+    fileGrid.querySelectorAll('[data-preview]').forEach(el => {
+      el.addEventListener('click', e => {
+        if(e.target.closest('button')) return;
+        window.open(el.dataset.preview, '_blank');
+      });
+    });
+    fileGrid.querySelectorAll('[data-delete-file]').forEach(el => {
+      el.addEventListener('click', e => { e.stopPropagation(); deleteFile(el.dataset.deleteFile); });
+    });
+    fileGrid.querySelectorAll('[data-delete-folder]').forEach(el => {
+      el.addEventListener('click', e => { e.stopPropagation(); deleteFolder(el.dataset.deleteFolder); });
+    });
+    fileGrid.querySelectorAll('[data-download]').forEach(el => {
+      el.addEventListener('click', e => { e.stopPropagation(); downloadFile(el.dataset.download, el.dataset.name); });
+    });
+    fileGrid.querySelectorAll('[data-copy]').forEach(el => {
+      el.addEventListener('click', e => { e.stopPropagation(); copyLink(el.dataset.copy); });
+    });
+  }
+
+  function getFileIcon(name){
+    const ext = name.split('.').pop().toLowerCase();
+    const icons = {
+      jpg:'🖼️',jpeg:'🖼️',png:'🖼️',gif:'🖼️',webp:'🖼️',svg:'🖼️',
+      pdf:'📄',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',
+      mp3:'🎵',wav:'🎵',mp4:'🎬',avi:'🎬',mov:'🎬',
+      zip:'📦',rar:'📦','7z':'📦',txt:'📃'
+    };
+    return icons[ext] || '📎';
+  }
+
+  /* ================================================================
+     RECENT LOG
+     ================================================================ */
+  function updateRecentLog(){
+    const files = allItems.filter(i => i.type === 'file')
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
+      .slice(0, 5);
+    if(files.length === 0){
+      recentItems.innerHTML = '<span style="color:#666;font-size:13px;">Tiada rekod</span>';
+      return;
+    }
+    recentItems.innerHTML = files.map(f => {
+      const time = new Date(f.date).toLocaleTimeString();
+      return '<div class="recent-log-item">📄 ' + escapeHtml(f.name) + ' <span>' + time + '</span></div>';
+    }).join('');
+  }
+
+  /* ================================================================
+     UPLOAD — Parallel + retry + reject >50MB
+     ================================================================ */
+  function readFileAsBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result.split(',')[1]);
+      reader.onerror = () => reject(new Error('Gagal baca fail'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function uploadOne(file, folderPath){
+    return readFileAsBase64(file).then(base64 => {
+      return callAPIPost({
         action: 'upload',
         userId: USER_ID,
         filename: file.name,
         mimeType: file.type || 'application/octet-stream',
         size: file.size,
         content: base64,
-        folderPath: currentPath === '/' ? '' : currentPath
-      };
-      callAPIPost(payload)
-        .then(function(result) {
-          if (result.success) {
-            successCount++;
-            showToast('✅ ' + file.name + ' ditelan!', 'success');
-          } else {
-            showToast('❌ ' + file.name + ': ' + result.error, 'error');
-          }
-          setTimeout(function() { processFile(index + 1); }, 300);
-        })
-        .catch(function(e) {
-          showToast('❌ ' + file.name + ': ' + e.message, 'error');
-          setTimeout(function() { processFile(index + 1); }, 300);
-        });
-    };
-    reader.onerror = function() {
-      showToast('❌ ' + file.name + ': Gagal baca fail', 'error');
-      setTimeout(function() { processFile(index + 1); }, 300);
-    };
-    reader.readAsDataURL(file);
+        folderPath: folderPath
+      });
+    });
   }
-  
-  processFile(0);
-}
 
-// ============ DOWNLOAD ============
-function downloadFile(fileId, fileName) {
-  showToast('📥 Memuat turun ' + fileName + '...', 'info');
-  callAPIPost({ action: 'download', fileId: fileId, userId: USER_ID })
-    .then(function(result) {
-      if (result.success) {
-        var byteCharacters = atob(result.content);
-        var byteNumbers = new Array(byteCharacters.length);
-        for (var i = 0; i < byteCharacters.length; i++) {
+  async function uploadFiles(files){
+    if(!files || files.length === 0 || isUploading) return;
+
+    /* ---- TAPIS FAIL > 50MB ---- */
+    const allFiles = Array.from(files);
+    const oversized = allFiles.filter(f => f.size > MAX_FILE_SIZE_BYTES);
+    const validFiles = allFiles.filter(f => f.size <= MAX_FILE_SIZE_BYTES);
+
+    if(validFiles.length === 0){
+      // Semua fail besar
+      const names = oversized.map(f => `• ${f.name} (${formatBytes(f.size)})`).join('\n');
+      showToast(`❌ Semua fail melebihi ${MAX_FILE_SIZE_MB}MB — tidak dihantar`, 'error');
+      console.warn('Rejected:\n' + names);
+      return;
+    }
+
+    /* ---- MULA UPLOAD ---- */
+    isUploading = true;
+    cancelUpload = false;
+    uploadOverlay.classList.add('active');
+    uploadList.innerHTML = '';
+    uploadRejectedBox.innerHTML = '';
+    uploadOverallFill.style.width = '0%';
+    uploadSubtitle.textContent = `${validFiles.length} fail · max ${MAX_FILE_SIZE_MB}MB/fail · ${MAX_CONCURRENT} serentak`;
+
+    /* ---- TUNJUK FAIL DITOLAK ---- */
+    if(oversized.length > 0){
+      let rejHtml = '<div class="rejected-box"><strong>⚠️ ' + oversized.length + ' fail ditolak</strong> (melebihi ' + MAX_FILE_SIZE_MB + 'MB):<br>';
+      oversized.forEach(f => {
+        rejHtml += '❌ ' + escapeHtml(f.name) + ' — ' + formatBytes(f.size) + '<br>';
+      });
+      rejHtml += '</div>';
+      uploadRejectedBox.innerHTML = rejHtml;
+    }
+
+    /* ---- RENDER SENARAI ---- */
+    const items = validFiles.map((f, i) => {
+      const div = document.createElement('div');
+      div.className = 'upload-item';
+      div.innerHTML =
+        '<span class="name">' + escapeHtml(f.name) + '</span>' +
+        '<span class="size">' + formatBytes(f.size) + '</span>' +
+        '<span class="state pending" data-idx="' + i + '">⏳</span>';
+      uploadList.appendChild(div);
+      return { file: f, state: 'pending', retries: 0, idx: i };
+    });
+
+    let completed = 0;
+    let successCount = 0;
+    let failCount = 0;
+    const folderPath = currentPath === '/' ? '' : currentPath;
+
+    function updateOverall(){
+      const pct = Math.round((completed / items.length) * 100);
+      uploadOverallFill.style.width = pct + '%';
+    }
+
+    function setState(item, state, label){
+      const el = uploadList.querySelector('[data-idx="' + item.idx + '"]');
+      if(el){
+        el.className = 'state ' + state;
+        el.textContent = label;
+      }
+    }
+
+    async function processItem(item){
+      if(cancelUpload) return;
+      item.state = 'uploading';
+      setState(item, 'uploading', '🌀');
+      try {
+        const result = await uploadOne(item.file, folderPath);
+        if(result && result.success){
+          item.state = 'success';
+          setState(item, 'success', '✅');
+          successCount++;
+        } else {
+          throw new Error(result && result.error ? result.error : 'Gagal');
+        }
+      } catch(err){
+        if(item.retries < MAX_RETRY && !cancelUpload){
+          item.retries++;
+          setState(item, 'retry', '🔄' + item.retries);
+          await new Promise(r => setTimeout(r, 1000 * item.retries));
+          return processItem(item);
+        }
+        item.state = 'error';
+        setState(item, 'error', '❌');
+        failCount++;
+      } finally {
+        completed++;
+        updateOverall();
+      }
+    }
+
+    /* ---- QUEUE 3 SERENTAK ---- */
+    async function runQueue(){
+      let cursor = 0;
+      async function worker(){
+        while(cursor < items.length && !cancelUpload){
+          const idx = cursor++;
+          await processItem(items[idx]);
+        }
+      }
+      const workers = Array.from({ length: MAX_CONCURRENT }, () => worker());
+      await Promise.all(workers);
+    }
+
+    try {
+      await runQueue();
+    } finally {
+      isUploading = false;
+      uploadOverlay.classList.remove('active');
+      if(cancelUpload){
+        showToast('⚠️ Upload dibatalkan', 'info');
+      } else if(successCount > 0){
+        let msg = '✅ ' + successCount + '/' + validFiles.length + ' fail ditelan!';
+        if(failCount > 0) msg += ' (' + failCount + ' gagal)';
+        if(oversized.length > 0) msg += ' · ' + oversized.length + ' ditolak';
+        showToast(msg, successCount === validFiles.length ? 'success' : 'info');
+      } else if(failCount > 0){
+        showToast('❌ Semua fail gagal dihantar', 'error');
+      }
+      loadData();
+    }
+  }
+
+  /* ================================================================
+     DOWNLOAD
+     ================================================================ */
+  function downloadFile(fileId, fileName){
+    showToast('📥 Memuat turun ' + fileName + '...', 'info');
+    callAPIPost({ action: 'download', fileId: fileId, userId: USER_ID })
+      .then(result => {
+        if(!result.success) throw new Error(result.error || 'Gagal');
+        const byteCharacters = atob(result.content);
+        const byteNumbers = new Uint8Array(byteCharacters.length);
+        for(let i = 0; i < byteCharacters.length; i++){
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
-        var byteArray = new Uint8Array(byteNumbers);
-        var blob = new Blob([byteArray], { type: result.mimeType || 'application/octet-stream' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
+        const blob = new Blob([byteNumbers], { type: result.mimeType || 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
         a.href = url;
         a.download = result.name || fileName;
         document.body.appendChild(a);
@@ -516,173 +722,140 @@ function downloadFile(fileId, fileName) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         showToast('✅ ' + fileName + ' dimuat turun!', 'success');
-      } else {
-        showToast('❌ Gagal: ' + result.error, 'error');
-      }
-    })
-    .catch(function(e) {
-      showToast('❌ Ralat: ' + e.message, 'error');
-    });
-}
+      })
+      .catch(e => showToast('❌ Ralat: ' + e.message, 'error'));
+  }
 
-// ============ PREVIEW ============
-function previewFile(url) {
-  window.open(url, '_blank');
-}
-
-// ============ COPY LINK ============
-function copyLink(url) {
-  navigator.clipboard.writeText(url)
-    .then(function() {
-      showToast('✅ Pautan disalin!', 'success');
-    })
-    .catch(function() {
-      // Fallback
-      var input = document.createElement('input');
+  /* ================================================================
+     COPY LINK
+     ================================================================ */
+  function copyLink(url){
+    const fallback = () => {
+      const input = document.createElement('input');
       input.value = url;
       document.body.appendChild(input);
       input.select();
-      document.execCommand('copy');
+      try { document.execCommand('copy'); showToast('✅ Pautan disalin!', 'success'); }
+      catch(e){ showToast('❌ Gagal salin', 'error'); }
       document.body.removeChild(input);
-      showToast('✅ Pautan disalin!', 'success');
-    });
-}
-
-// ============ DELETE FILE ============
-function deleteFile(fileId) {
-  if (!confirm('Padam fail ini?')) return;
-  callAPI({ action: 'delete', fileId: fileId, userId: USER_ID })
-    .then(function(result) {
-      if (result.success) {
-        showToast('🗑️ Fail dipadam', 'success');
-        loadData();
-      } else {
-        showToast('❌ Gagal padam', 'error');
-      }
-    })
-    .catch(function(e) {
-      showToast('❌ Ralat: ' + e.message, 'error');
-    });
-}
-
-// ============ DELETE FOLDER ============
-function deleteFolder(folderName) {
-  if (!confirm('Padam folder "' + folderName + '" dan semua kandungannya?')) return;
-  var path = currentPath === '/' ? folderName : currentPath + '/' + folderName;
-  callAPI({ action: 'deleteFolder', userId: USER_ID, folderPath: path })
-    .then(function(result) {
-      if (result.success) {
-        showToast('🗑️ Folder dipadam', 'success');
-        loadData();
-      } else {
-        showToast('❌ Gagal padam folder', 'error');
-      }
-    })
-    .catch(function(e) {
-      showToast('❌ Ralat: ' + e.message, 'error');
-    });
-}
-
-// ============ CREATE FOLDER ============
-function openFolderModal() {
-  folderNameInput.value = '';
-  folderModal.classList.add('active');
-}
-
-function closeFolderModal() {
-  folderModal.classList.remove('active');
-}
-
-function confirmCreateFolder() {
-  var name = folderNameInput.value.trim();
-  if (!name) {
-    showToast('❌ Sila masukkan nama folder', 'error');
-    return;
-  }
-  // Check if already exists
-  var exists = false;
-  for (var i = 0; i < allItems.length; i++) {
-    if (allItems[i].type === 'folder' && allItems[i].name === name) {
-      exists = true;
-      break;
-    }
-  }
-  if (exists) {
-    showToast('❌ Folder sudah wujud', 'error');
-    return;
-  }
-  
-  var folderPath = currentPath === '/' ? '' : currentPath;
-  callAPI({
-    action: 'createSubFolder',
-    userId: USER_ID,
-    folderName: name,
-    folderPath: folderPath
-  })
-  .then(function(result) {
-    if (result.success) {
-      showToast('📁 Folder "' + name + '" dicipta!', 'success');
-      closeFolderModal();
-      loadData();
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(url)
+        .then(() => showToast('✅ Pautan disalin!', 'success'))
+        .catch(fallback);
     } else {
-      showToast('❌ Gagal: ' + result.error, 'error');
+      fallback();
     }
-  })
-  .catch(function(e) {
-    showToast('❌ Ralat: ' + e.message, 'error');
+  }
+
+  /* ================================================================
+     DELETE
+     ================================================================ */
+  function deleteFile(fileId){
+    if(!confirm('Padam fail ini?')) return;
+    callAPI({ action: 'delete', fileId: fileId, userId: USER_ID })
+      .then(result => {
+        if(result.success){ showToast('🗑️ Fail dipadam', 'success'); loadData(); }
+        else showToast('❌ Gagal padam', 'error');
+      })
+      .catch(e => showToast('❌ Ralat: ' + e.message, 'error'));
+  }
+
+  function deleteFolder(folderName){
+    if(!confirm('Padam folder "' + folderName + '" dan semua kandungannya?')) return;
+    const path = currentPath === '/' ? folderName : currentPath + '/' + folderName;
+    callAPI({ action: 'deleteFolder', userId: USER_ID, folderPath: path })
+      .then(result => {
+        if(result.success){ showToast('🗑️ Folder dipadam', 'success'); loadData(); }
+        else showToast('❌ Gagal padam folder', 'error');
+      })
+      .catch(e => showToast('❌ Ralat: ' + e.message, 'error'));
+  }
+
+  /* ================================================================
+     CREATE FOLDER
+     ================================================================ */
+  function openFolderModal(){
+    folderNameInput.value = '';
+    folderModal.classList.add('active');
+    setTimeout(() => folderNameInput.focus(), 100);
+  }
+
+  function closeFolderModal(){ folderModal.classList.remove('active'); }
+
+  function confirmCreateFolder(){
+    const name = folderNameInput.value.trim();
+    if(!name){ showToast('❌ Sila masukkan nama folder', 'error'); return; }
+    if(allItems.some(i => i.type === 'folder' && i.name === name)){
+      showToast('❌ Folder sudah wujud', 'error');
+      return;
+    }
+    const folderPath = currentPath === '/' ? '' : currentPath;
+    callAPI({ action: 'createSubFolder', userId: USER_ID, folderName: name, folderPath: folderPath })
+      .then(result => {
+        if(result.success){
+          showToast('📁 Folder "' + name + '" dicipta!', 'success');
+          closeFolderModal();
+          loadData();
+        } else showToast('❌ Gagal: ' + result.error, 'error');
+      })
+      .catch(e => showToast('❌ Ralat: ' + e.message, 'error'));
+  }
+
+  /* ================================================================
+     EVENTS
+     ================================================================ */
+  blackhole.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', function(){
+    if(this.files.length){
+      uploadFiles(this.files);
+      this.value = '';
+    }
   });
-}
 
-// ============ EVENTS ============
-blackhole.addEventListener('click', function() {
-  fileInput.click();
-});
+  ['dragenter', 'dragover'].forEach(evt => {
+    document.addEventListener(evt, e => {
+      e.preventDefault();
+      blackhole.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    document.addEventListener(evt, e => {
+      e.preventDefault();
+      if(evt === 'dragleave' && e.relatedTarget) return;
+      blackhole.classList.remove('dragover');
+    });
+  });
+  document.addEventListener('drop', e => {
+    if(e.dataTransfer.files.length) uploadFiles(e.dataTransfer.files);
+  });
 
-fileInput.addEventListener('change', function() {
-  if (this.files.length) {
-    uploadFiles(this.files);
-    this.value = '';
-  }
-});
+  refreshBtn.addEventListener('click', loadData);
+  uploadBtn.addEventListener('click', () => fileInput.click());
+  createFolderBtn.addEventListener('click', openFolderModal);
+  cancelFolderBtn.addEventListener('click', closeFolderModal);
+  confirmFolderBtn.addEventListener('click', confirmCreateFolder);
+  cancelUploadBtn.addEventListener('click', () => {
+    cancelUpload = true;
+    showToast('⚠️ Membatalkan upload...', 'info');
+  });
 
-document.addEventListener('dragover', function(e) {
-  e.preventDefault();
-});
+  folderModal.addEventListener('click', function(e){
+    if(e.target === this) closeFolderModal();
+  });
+  folderNameInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') confirmCreateFolder();
+  });
 
-document.addEventListener('drop', function(e) {
-  e.preventDefault();
-  if (e.dataTransfer.files.length) {
-    uploadFiles(e.dataTransfer.files);
-  }
-});
-
-refreshBtn.addEventListener('click', loadData);
-uploadBtn.addEventListener('click', function() {
-  fileInput.click();
-});
-createFolderBtn.addEventListener('click', openFolderModal);
-cancelFolderBtn.addEventListener('click', closeFolderModal);
-confirmFolderBtn.addEventListener('click', confirmCreateFolder);
-
-// Click outside modal to close
-folderModal.addEventListener('click', function(e) {
-  if (e.target === this) {
-    closeFolderModal();
-  }
-});
-
-// Enter key in folder name input
-folderNameInput.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    confirmCreateFolder();
-  }
-});
-
-// ============ INIT ============
-loadData();
-// Auto-refresh every 15 seconds
-setInterval(loadData, 15000);
-console.log('🌌 Black Hole Wormhole loaded!');
+  /* ================================================================
+     INIT
+     ================================================================ */
+  loadData();
+  setInterval(() => {
+    if(!isUploading) loadData();
+  }, REFRESH_INTERVAL_MS);
+})();
 </script>
 </body>
 </html>
