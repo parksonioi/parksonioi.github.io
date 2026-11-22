@@ -2283,9 +2283,6 @@ if(btnDl){
             // ================================================================
 
             async function handleFileUpload(file){
-                if(!file||isProcessing)return;
-                isProcessing=true;
-                async function handleFileUpload(file){
     if(!file||isProcessing)return;
     isProcessing=true;
 
@@ -2297,11 +2294,16 @@ if(btnDl){
         btnDl.style.pointerEvents = 'none';
         btnDl.style.cursor = 'default';
     }
-                let sd=document.getElementById("status"), fn=document.getElementById("fileNameDisplay"), fs=document.getElementById("fileSizeDisplay");
-                fn.textContent=`📄 ${file.name}`; fs.textContent=`${(file.size/1024).toFixed(1)} KB`; sd.innerHTML=`<span class="processing-text"><span class="spinner"></span> Processing ${file.name}...</span>`;
-                try{ await processData(file); } catch(err){ sd.innerHTML=`◆ <span class="error">ERROR:</span> ${err.message}`; } finally{ isProcessing=false; }
-            }
 
+    let sd=document.getElementById("status"), fn=document.getElementById("fileNameDisplay"), fs=document.getElementById("fileSizeDisplay");
+    fn.textContent=`📄 ${file.name}`;
+    fs.textContent=`${(file.size/1024).toFixed(1)} KB`;
+    sd.innerHTML=`<span class="processing-text"><span class="spinner"></span> Processing ${file.name}...</span>`;
+
+    try{ await processData(file); }
+    catch(err){ sd.innerHTML=`◆ <span class="error">ERROR:</span> ${err.message}`; }
+    finally{ isProcessing=false; }
+}
             // Inject the content into the container
             function renderPage() {
                 const container = document.getElementById('mainContainer');
