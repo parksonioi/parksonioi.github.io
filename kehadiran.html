@@ -1,375 +1,440 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <title>Attendance Checklist</title>
-   <link rel="stylesheet" href="/info-box.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Checklist</title>
+<link rel="stylesheet" href="/info-box.css">
 <script src="/notes.js" defer></script>
-    <style>
-        /* --- SETTING UNTUK PAPARAN SKRIN (BROWSER) --- */
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
-        
-        .controls { margin-bottom: 20px; padding: 15px; background: #fff; border: 1px solid #ccc; border-radius: 5px; text-align: center; position: sticky; top: 0; z-index: 100;}
-        .controls label { font-weight: bold; }
-        .controls select, .controls input { padding: 5px; margin-right: 15px; font-size: 14px;}
-        .controls button { padding: 6px 15px; font-weight: bold; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 3px;}
-        
-        .page-container { max-width: 210mm; margin: 0 auto; background: white; padding: 10mm; box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-        
-        .form-wrapper { margin-bottom: 10mm; position: relative; }
-        .cut-line { text-align: center; border-bottom: 2px dashed #999; margin: 5mm 0; font-size: 10px; color: #666; position: relative; }
-        .cut-line span { position: relative; top: 8px; background: white; padding: 0 10px; }
+<style>
+/* ===== BASE ===== */
+*{box-sizing:border-box}
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  margin:20px;
+  background:#f4f4f4;
+  color:#111;
+}
 
-        /* --- REKA BENTUK FORM --- */
-        .header { text-align: center; margin-bottom: 4px; }
-        .header h2 { margin: 0; font-size: 15px; font-weight: 900; letter-spacing: 0.3px; } 
-        .header h3 { margin: 1px 0 0 0; font-size: 10px; font-weight: bold; } 
-        
-        /* --- BULAN & TAHUN DI KANAN ATAS (TANPA TEKS MONTH/YEAR) --- */
-        .top-right-info {
-            position: absolute;
-            top: 0; 
-            right: 20px; 
-            font-size: 12px; /* Besarkan sikit sebab dah takde label */
-            font-weight: bold;
-            text-align: right;
-            white-space: nowrap;
-        }
+/* ===== CONTROLS BAR ===== */
+.controls{
+  margin-bottom:20px;
+  padding:15px;
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:5px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.controls label{font-weight:bold}
+.controls select,
+.controls input{
+  padding:5px;
+  margin-right:15px;
+  font-size:14px;
+}
+.controls button{
+  padding:6px 15px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#4CAF50;
+  color:#fff;
+  border:none;
+  border-radius:3px;
+}
+.controls button:hover{background:#45a049}
 
-        /* --- NAME, DEPT, BRAND (1 BARIS) --- */
-        .info-grid-3 { 
-            display: grid; 
-            grid-template-columns: auto 4fr auto 2fr auto 2fr; 
-            gap: 4px 8px; 
-            margin-bottom: 4px; 
-            font-size: 10px; 
-            font-weight: bold;
-            align-items: center; 
-        }
-        .info-grid-3 .label { white-space: nowrap; }
-        .info-grid-3 .line {
-            border-bottom: 1px solid black;
-            height: 15px; 
-            display: flex;
-            align-items: flex-end; 
-            padding-left: 4px;
-            font-weight: normal;
-            overflow: hidden; 
-            white-space: nowrap;
-            font-size: 12px; 
-        }
-        
-        /* --- KAWASAN GRID KALENDAR --- */
-        .calendar-wrapper { position: relative; flex-grow: 1; display: flex; flex-direction: column;}
-        
-        /* WATERMARK LOGO */
-        .watermark {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            font-size: 80px;
-            font-weight: 900;
-            color: #000;
-            opacity: 0.04;
-            z-index: 0;
-            pointer-events: none;
-            letter-spacing: 5px;
-            white-space: nowrap;
-        }
+/* ===== PAGE CONTAINER ===== */
+.page-container{
+  max-width:210mm;
+  margin:0 auto;
+  background:#fff;
+  padding:10mm;
+  box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
 
-        .grid-container { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            border: 2px solid black; 
-            width: 100%; 
-            background-color: transparent;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* --- HEADER HARI --- */
-        .day-header {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            font-weight: bold;
-            border: 1px solid black;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            line-height: 1.1;
-            padding: 2px 1px;
-        }
-        .day-title { font-size: 10px; font-weight: bold; }
-        
-        /* SUB-TEXT FOKUS */
-        .day-subtitle { 
-            font-size: 6.5px; 
-            font-weight: bold; 
-            color: #fff; 
-            margin-top: 1px;
-            text-transform: uppercase;
-        }
+/* ===== FORM WRAPPER ===== */
+.form-wrapper{
+  margin-bottom:10mm;
+  position:relative;
+}
 
-        /* --- KOTAK TARIKH --- */
-        .day-cell { 
-            display: flex; 
-            flex-direction: column; 
-            border: 1px solid black; 
-            min-height: 55px; 
-            position: relative;
-            box-sizing: border-box;
-            background-color: rgba(255, 255, 255, 0.7); 
-        }
-        
-        .day-number { 
-            background-color: #d9d9d9; 
-            text-align: left; 
-            font-weight: bold; 
-            font-size: 10px; 
-            padding: 0px 4px; 
-            height: 13px; 
-            line-height: 13px;
-            border-bottom: 1px solid black; 
-            box-sizing: border-box;
-            width: 100%; 
-        }
-        
-        .stamp-space { flex-grow: 1; } 
-        .empty-cell { background-color: #f9f9f9; border: 1px solid black; box-sizing: border-box; }
+/* ===== CUT LINE ===== */
+.cut-line{
+  text-align:center;
+  border-bottom:2px dashed #999;
+  margin:5mm 0;
+  font-size:10px;
+  color:#666;
+  position:relative;
+}
+.cut-line span{
+  position:relative;
+  top:8px;
+  background:#fff;
+  padding:0 10px;
+}
 
-        /* Highlight Warna */
-        .col-monday { background-color: #ffe699 !important; }
-        .col-saturday { background-color: #b3d9ff !important; }
-        .col-sunday { background-color: #ffb3b3 !important; }
+/* ===== HEADER ===== */
+.header{text-align:center;margin-bottom:4px}
+.header h2{
+  margin:0;
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.3px;
+}
+.header h3{
+  margin:1px 0 0 0;
+  font-size:10px;
+  font-weight:bold;
+}
 
-        /* --- SETTING UNTUK PRINT (A4) --- */
-        @media print {
-            @page { size: A4 portrait; margin: 0; }
-            
-            html, body { 
-                width: 210mm; 
-                height: 297mm;
-                margin: 0; 
-                padding: 2mm 4mm; 
-                background: white; 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact; 
-                box-sizing: border-box;
-            }
-            
-            .controls { display: none; }
-            .page-container { padding: 0; margin: 0; box-shadow: none; width: 100%; max-width: 100%; }
-            
-            .form-wrapper { 
-                height: 144mm; 
-                display: flex;
-                flex-direction: column;
-                page-break-inside: avoid;
-                margin-bottom: 0;
-            }
-            
-            .header { height: 8mm; margin: 0; } 
-            .info-grid-3 { height: 9mm; margin: 0; margin-bottom: 1mm; } 
-            
-            /* POSISI BULAN & TAHUN MASA PRINT */
-            .top-right-info { 
-                top: 0; 
-                right: 15px; 
-                font-size: 11px; /* Kecilkan sikit masa print supaya tak terpotong */
-            }
-            
-            .calendar-wrapper { flex-grow: 1; }
-            
-            .grid-container { 
-                flex-grow: 1; 
-                display: grid;
-                grid-template-columns: repeat(7, 1fr);
-                grid-template-rows: 24px; 
-                grid-auto-rows: 1fr; 
-            }
-            
-            .day-header { height: 24px; padding: 0; }
-            .day-title { font-size: 10px; }
-            .day-subtitle { font-size: 7px; margin-top: 0; line-height: 1; font-weight: bold;} 
-            
-            .day-cell { min-height: 0; height: 100%; } 
-            .day-number { font-size: 10px; padding: 0px 4px; height: 13px; line-height: 13px; width: 100%; }
-            
-            .cut-line { 
-                margin: 0.5mm 0; 
-                padding: 0;
-                height: 3mm; 
-                border-bottom: 1px dashed #000; 
-            }
-            .cut-line span { display: none; } 
-        }
-    </style>
+/* ===== TOP-RIGHT MONTH/YEAR ===== */
+.top-right-info{
+  position:absolute;
+  top:0;
+  right:20px;
+  font-size:12px;
+  font-weight:bold;
+  text-align:right;
+  white-space:nowrap;
+}
+
+/* ===== INFO GRID (NAME / DEPT / BRAND) ===== */
+.info-grid-3{
+  display:grid;
+  grid-template-columns:auto 4fr auto 2fr auto 2fr;
+  gap:4px 8px;
+  margin-bottom:4px;
+  font-size:10px;
+  font-weight:bold;
+  align-items:center;
+}
+.info-grid-3 .label{white-space:nowrap}
+.info-grid-3 .line{
+  border-bottom:1px solid #000;
+  height:15px;
+  display:flex;
+  align-items:flex-end;
+  padding-left:4px;
+  font-weight:normal;
+  overflow:hidden;
+  white-space:nowrap;
+  font-size:12px;
+}
+
+/* ===== CALENDAR ===== */
+.calendar-wrapper{
+  position:relative;
+  flex-grow:1;
+  display:flex;
+  flex-direction:column;
+}
+.watermark{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) rotate(-25deg);
+  font-size:80px;
+  font-weight:900;
+  color:#000;
+  opacity:.04;
+  z-index:0;
+  pointer-events:none;
+  letter-spacing:5px;
+  white-space:nowrap;
+}
+.grid-container{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  border:2px solid #000;
+  width:100%;
+  background:transparent;
+  position:relative;
+  z-index:1;
+}
+
+/* ===== DAY HEADER ===== */
+.day-header{
+  background:#333;
+  color:#fff;
+  text-align:center;
+  font-weight:bold;
+  border:1px solid #000;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  line-height:1.1;
+  padding:2px 1px;
+}
+.day-title{font-size:10px;font-weight:bold}
+.day-subtitle{
+  font-size:6.5px;
+  font-weight:bold;
+  color:#fff;
+  margin-top:1px;
+  text-transform:uppercase;
+}
+
+/* ===== DAY CELL ===== */
+.day-cell{
+  display:flex;
+  flex-direction:column;
+  border:1px solid #000;
+  min-height:55px;
+  position:relative;
+  background:rgba(255,255,255,.7);
+}
+.day-number{
+  background:#d9d9d9;
+  text-align:left;
+  font-weight:bold;
+  font-size:10px;
+  padding:0 4px;
+  height:13px;
+  line-height:13px;
+  border-bottom:1px solid #000;
+  width:100%;
+}
+.stamp-space{flex-grow:1}
+.empty-cell{background:#f9f9f9;border:1px solid #000}
+
+/* ===== HIGHLIGHT COLUMNS ===== */
+.col-monday   {background:#ffe699 !important}
+.col-saturday {background:#b3d9ff !important}
+.col-sunday   {background:#ffb3b3 !important}
+
+/* ===== PRINT (A4 PORTRAIT) ===== */
+@media print{
+  @page{size:A4 portrait;margin:0}
+  html,body{
+    width:210mm;
+    height:297mm;
+    margin:0;
+    padding:2mm 4mm;
+    background:#fff;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .controls{display:none}
+  .page-container{
+    padding:0;
+    margin:0;
+    box-shadow:none;
+    width:100%;
+    max-width:100%;
+  }
+  .form-wrapper{
+    height:144mm;
+    display:flex;
+    flex-direction:column;
+    page-break-inside:avoid;
+    margin-bottom:0;
+  }
+  .header{height:8mm;margin:0}
+  .info-grid-3{height:9mm;margin:0 0 1mm 0}
+  .top-right-info{top:0;right:15px;font-size:11px}
+  .calendar-wrapper{flex-grow:1}
+  .grid-container{
+    flex-grow:1;
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    grid-template-rows:24px;
+    grid-auto-rows:1fr;
+  }
+  .day-header{height:24px;padding:0}
+  .day-title{font-size:10px}
+  .day-subtitle{font-size:7px;margin-top:0;line-height:1;font-weight:bold}
+  .day-cell{min-height:0;height:100%}
+  .day-number{font-size:10px;padding:0 4px;height:13px;line-height:13px;width:100%}
+  .cut-line{
+    margin:.5mm 0;
+    padding:0;
+    height:3mm;
+    border-bottom:1px dashed #000;
+  }
+  .cut-line span{display:none}
+}
+
+/* ===== RESPONSIVE (SKRIN KECIL) ===== */
+@media (max-width:640px){
+  body{margin:8px}
+  .page-container{padding:5mm}
+  .controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+  .controls label{margin:0}
+  .controls select,
+  .controls input{margin-right:8px}
+  .info-grid-3{grid-template-columns:auto 1fr;font-size:9px}
+  .info-grid-3 .label{font-size:9px}
+  .top-right-info{font-size:10px;right:8px}
+}
+</style>
 </head>
 <body>
 
-    <div class="controls">
-        <label>Pilih Bulan: </label>
-        <select id="monthSelect"></select>
-        <label> Tahun: </label>
-        <input type="number" id="yearInput" style="width: 80px;">
-        <button onclick="window.print()">🖨️ Print<I/button>
+<!-- ===== CONTROLS ===== -->
+<div class="controls">
+  <label for="monthSelect">Pilih Bulan: </label>
+  <select id="monthSelect"></select>
+  <label for="yearInput">Tahun: </label>
+  <input type="number" id="yearInput" style="width:80px">
+  <button type="button" id="btnPrint">🖨️ Print</button>
+</div>
+
+<!-- ===== PAGE ===== -->
+<div class="page-container">
+
+  <!-- STAFF 1 -->
+  <div class="form-wrapper">
+    <div class="top-right-info"><span class="displayMonthYear"></span></div>
+    <div class="header">
+      <h2>PARKSON IOI CITY MALL</h2>
+      <h3>MONTHLY BRIEFING ATTENDANCE AND GROOMING CHECKLIST</h3>
     </div>
-
-    <div class="page-container">
-        
-        <!-- FORM STAFF 1 -->
-        <div class="form-wrapper">
-            <!-- Bulan & Tahun di Kanan Atas (Tanpa label) -->
-            <div class="top-right-info">
-                <span class="displayMonthYear"></span>
-            </div>
-
-            <div class="header">
-                <h2>PARKSON IOI CITY MALL</h2>
-                <h3>MONTHLY BRIEFING ATTENDANCE AND GROOMING CHECKLIST</h3>
-            </div>
-            
-            <div class="info-grid-3">
-                <div class="label">NAME:</div>
-                <div class="line"></div>
-                <div class="label">DEPT:</div>
-                <div class="line"></div>
-                <div class="label">BRAND:</div>
-                <div class="line"></div>
-            </div>
-            
-            <div class="calendar-wrapper">
-                <div class="watermark">PARKSON</div>
-                <div class="grid-container" id="grid1"></div>
-            </div>
-        </div>
-
-        <!-- GARISAN GUNTING -->
-        <div class="cut-line"><span>✂️ GUNTING DI SINI ✂️</span></div>
-
-        <!-- FORM STAFF 2 -->
-        <div class="form-wrapper">
-            <!-- Bulan & Tahun di Kanan Atas (Tanpa label) -->
-            <div class="top-right-info">
-                <span class="displayMonthYear"></span>
-            </div>
-
-            <div class="header">
-                <h2>PARKSON IOI CITY MALL</h2>
-                <h3>MONTHLY BRIEFING ATTENDANCE AND GROOMING CHECKLIST</h3>
-            </div>
-            
-            <div class="info-grid-3">
-                <div class="label">NAME:</div>
-                <div class="line"></div>
-                <div class="label">DEPT:</div>
-                <div class="line"></div>
-                <div class="label">BRAND:</div>
-                <div class="line"></div>
-            </div>
-            
-            <div class="calendar-wrapper">
-                <div class="watermark">PARKSON</div>
-                <div class="grid-container" id="grid2"></div>
-            </div>
-        </div>
-
+    <div class="info-grid-3">
+      <div class="label">NAME:</div><div class="line"></div>
+      <div class="label">DEPT:</div><div class="line"></div>
+      <div class="label">BRAND:</div><div class="line"></div>
     </div>
+    <div class="calendar-wrapper">
+      <div class="watermark">PARKSON</div>
+      <div class="grid-container" id="grid1"></div>
+    </div>
+  </div>
 
-    <script>
-        const monthSelect = document.getElementById('monthSelect');
-        const yearInput = document.getElementById('yearInput');
-        const displayMonthYears = document.querySelectorAll('.displayMonthYear');
-        const grids = [document.getElementById('grid1'), document.getElementById('grid2')];
-        
-        const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DECEMBER"];
-        
-        const daysData = [
-            { day: "MONDAY", text: "Ready for Service" },
-            { day: "TUESDAY", text: "Acknowledge & Greet" },
-            { day: "WEDNESDAY", text: "Identify Needs" },
-            { day: "THURSDAY", text: "Advise Solution" },
-            { day: "FRIDAY", text: "Plus Selling" },
-            { day: "SATURDAY", text: "Close the Sale" },
-            { day: "SUNDAY", text: "Post Sale Service" }
-        ];
+  <!-- CUT LINE -->
+  <div class="cut-line"><span>✂️ GUNTING DI SINI ✂️</span></div>
 
-        months.forEach((m, index) => {
-            let opt = document.createElement('option');
-            opt.value = index;
-            opt.innerHTML = m;
-            monthSelect.appendChild(opt);
-        });
+  <!-- STAFF 2 -->
+  <div class="form-wrapper">
+    <div class="top-right-info"><span class="displayMonthYear"></span></div>
+    <div class="header">
+      <h2>PARKSON IOI CITY MALL</h2>
+      <h3>MONTHLY BRIEFING ATTENDANCE AND GROOMING CHECKLIST</h3>
+    </div>
+    <div class="info-grid-3">
+      <div class="label">NAME:</div><div class="line"></div>
+      <div class="label">DEPT:</div><div class="line"></div>
+      <div class="label">BRAND:</div><div class="line"></div>
+    </div>
+    <div class="calendar-wrapper">
+      <div class="watermark">PARKSON</div>
+      <div class="grid-container" id="grid2"></div>
+    </div>
+  </div>
 
-        const today = new Date();
-        monthSelect.value = today.getMonth();
-        yearInput.value = today.getFullYear();
+</div>
 
-        function generateCalendar() {
-            const month = parseInt(monthSelect.value);
-            const year = parseInt(yearInput.value);
-            
-            displayMonthYears.forEach(el => {
-                el.innerText = months[month] + " " + year;
-            });
+<script>
+(function(){
+  'use strict';
 
-            const firstDay = new Date(year, month, 1).getDay(); 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            let startOffset = (firstDay + 6) % 7; 
+  /* ===== ELEMEN ===== */
+  const monthSelect     = document.getElementById('monthSelect');
+  const yearInput       = document.getElementById('yearInput');
+  const btnPrint        = document.getElementById('btnPrint');
+  const displayMonthYear = document.querySelectorAll('.displayMonthYear');
+  const grids           = [document.getElementById('grid1'), document.getElementById('grid2')];
 
-            grids.forEach(grid => {
-                grid.innerHTML = ""; 
+  /* ===== DATA ===== */
+  const MONTHS = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
 
-                daysData.forEach(data => {
-                    let header = document.createElement('div');
-                    header.className = 'day-header';
-                    header.innerHTML = `
-                        <div class="day-title">${data.day}</div>
-                        <div class="day-subtitle">${data.text}</div>
-                    `;
-                    grid.appendChild(header);
-                });
+  const DAYS_DATA = [
+    {day:"MONDAY",    text:"Ready for Service"},
+    {day:"TUESDAY",   text:"Acknowledge & Greet"},
+    {day:"WEDNESDAY", text:"Identify Needs"},
+    {day:"THURSDAY",  text:"Advise Solution"},
+    {day:"FRIDAY",    text:"Plus Selling"},
+    {day:"SATURDAY",  text:"Close the Sale"},
+    {day:"SUNDAY",    text:"Post Sale Service"}
+  ];
 
-                for (let i = 0; i < startOffset; i++) {
-                    let empty = document.createElement('div');
-                    empty.className = 'empty-cell';
-                    grid.appendChild(empty);
-                }
+  /* ===== ISI DROPDOWN BULAN ===== */
+  MONTHS.forEach((name, index) => {
+    const opt = document.createElement('option');
+    opt.value = index;
+    opt.textContent = name;
+    monthSelect.appendChild(opt);
+  });
 
-                for (let day = 1; day <= daysInMonth; day++) {
-                    let cell = document.createElement('div');
-                    cell.className = 'day-cell';
+  /* ===== SET DEFAULT ===== */
+  const today = new Date();
+  monthSelect.value = today.getMonth();
+  yearInput.value   = today.getFullYear();
 
-                    let currentDayOfWeek = (startOffset + day - 1) % 7;
-                    if (currentDayOfWeek === 0) cell.classList.add('col-monday');
-                    if (currentDayOfWeek === 5) cell.classList.add('col-saturday');
-                    if (currentDayOfWeek === 6) cell.classList.add('col-sunday');
+  /* ===== GENERATE KALENDAR ===== */
+  function generateCalendar(){
+    const month = parseInt(monthSelect.value, 10);
+    const year  = parseInt(yearInput.value, 10);
+    if (isNaN(month) || isNaN(year)) return;
 
-                    cell.innerHTML = `
-                        <div class="day-number">
-                            <span>${day}</span>
-                        </div>
-                        <div class="stamp-space"></div>
-                    `;
-                    grid.appendChild(cell);
-                }
-                
-                let totalCells = startOffset + daysInMonth;
-                let remainingCells = (7 - (totalCells % 7)) % 7;
-                for (let i = 0; i < remainingCells; i++) {
-                    let empty = document.createElement('div');
-                    empty.className = 'empty-cell';
-                    grid.appendChild(empty);
-                }
-            });
-        }
+    // Update label bulan/tahun
+    const label = `${MONTHS[month]} ${year}`;
+    displayMonthYear.forEach(el => el.textContent = label);
 
-        monthSelect.addEventListener('change', generateCalendar);
-        yearInput.addEventListener('input', generateCalendar);
-        generateCalendar();
-    </script>
+    const firstDay      = new Date(year, month, 1).getDay();      // 0=Sun
+    const daysInMonth   = new Date(year, month + 1, 0).getDate();
+    const startOffset   = (firstDay + 6) % 7;                     // Isnin = 0
+
+    grids.forEach(grid => {
+      grid.innerHTML = '';
+
+      // Header hari
+      DAYS_DATA.forEach(d => {
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.innerHTML = `
+          <div class="day-title">${d.day}</div>
+          <div class="day-subtitle">${d.text}</div>
+        `;
+        grid.appendChild(header);
+      });
+
+      // Sel kosong sebelum hari pertama
+      for (let i = 0; i < startOffset; i++){
+        const empty = document.createElement('div');
+        empty.className = 'empty-cell';
+        grid.appendChild(empty);
+      }
+
+      // Sel hari
+      for (let day = 1; day <= daysInMonth; day++){
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+
+        const dow = (startOffset + day - 1) % 7;
+        if (dow === 0) cell.classList.add('col-monday');
+        if (dow === 5) cell.classList.add('col-saturday');
+        if (dow === 6) cell.classList.add('col-sunday');
+
+        cell.innerHTML = `
+          <div class="day-number"><span>${day}</span></div>
+          <div class="stamp-space"></div>
+        `;
+        grid.appendChild(cell);
+      }
+
+      // Sel kosong selepas hari terakhir
+      const totalCells   = startOffset + daysInMonth;
+      const remaining    = (7 - (totalCells % 7)) % 7;
+      for (let i = 0; i < remaining; i++){
+        const empty = document.createElement('div');
+        empty.className = 'empty-cell';
+        grid.appendChild(empty);
+      }
+    });
+  }
+
+  /* ===== EVENT ===== */
+  monthSelect.addEventListener('change', generateCalendar);
+  yearInput.addEventListener('input', generateCalendar);
+  btnPrint.addEventListener('click', () => window.print());
+
+  /* ===== INIT ===== */
+  generateCalendar();
+})();
+</script>
 </body>
 </html>
