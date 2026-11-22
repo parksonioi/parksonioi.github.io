@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Receipt → A4 Auto Split</title>
+  <title>Multi-Receipt → A4 / Thermal Auto Split</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     :root {
       --body-font-size: 10pt;
       --header-main-size: 2.0rem;
       --header-branch-size: 2.0rem;
-      --barcode-text-size: 1.1rem;
+      --barcode-text-size: 1.0rem;
       --max-width-header-trx: 6.7cm;
       --max-width-item-number: 6.2cm;
       --max-width-barcode-last: 7.2cm;
@@ -60,55 +60,53 @@
     .app-header h1 { font-size: 1.25rem; font-weight: 700; color: var(--c-text); letter-spacing: -0.3px; }
     .app-header p { font-size: 0.8rem; color: var(--c-text-muted); margin-top: 2px; }
 
-.btn-toggle-cashier {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border: 1.5px solid var(--c-border);
-  background: var(--c-surface);
-  color: var(--c-text);
-  border-radius: 10px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  font-family: inherit;
-}
-.btn-toggle-cashier:hover {
-  border-color: var(--c-primary);
-  color: var(--c-primary);
-  background: #eff6ff;
-}
-.btn-toggle-cashier.active {
-  background: var(--c-success);
-  border-color: var(--c-success);
-  color: white;
-  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
-}
-.btn-toggle-cashier.active:hover {
-  background: var(--c-success-hover);
-  border-color: var(--c-success-hover);
-  color: white;
-}
-.btn-toggle-cashier .toggle-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #cbd5e1;
-  transition: background 0.15s;
-}
-.btn-toggle-cashier.active .toggle-dot {
-  background: #bbf7d0;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
-}
+    .btn-toggle-cashier {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border: 1.5px solid var(--c-border);
+      background: var(--c-surface);
+      color: var(--c-text);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      font-family: inherit;
+    }
+    .btn-toggle-cashier:hover {
+      border-color: var(--c-primary);
+      color: var(--c-primary);
+      background: #eff6ff;
+    }
+    .btn-toggle-cashier.active {
+      background: var(--c-success);
+      border-color: var(--c-success);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    }
+    .btn-toggle-cashier.active:hover {
+      background: var(--c-success-hover);
+      border-color: var(--c-success-hover);
+      color: white;
+    }
+    .btn-toggle-cashier .toggle-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: background 0.15s;
+    }
+    .btn-toggle-cashier.active .toggle-dot {
+      background: #bbf7d0;
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+    }
 
-/* Class untuk hide floating box */
-.floating-cashier.hidden {
-  display: none !important;
-}
+    .floating-cashier.hidden { display: none !important; }
+
     .layout {
       display: grid;
       grid-template-columns: 440px 1fr;
@@ -212,54 +210,51 @@
       flex: 1;
     }
     .floating-cashier .fc-header .btn-add {
-  background: #34c759;          /* iOS system green */
-  color: white;
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  font-size: 1.4rem;
-  font-weight: 400;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(52,199,89,0.35);
-  transition: all 0.15s;
-}
-.floating-cashier .fc-header .btn-add:hover {
-  background: #2fb350;
-  transform: scale(1.08);
-  box-shadow: 0 3px 10px rgba(52,199,89,0.5);
-}
-.floating-cashier .fc-header .btn-add:active {
-  transform: scale(0.95);
-}
+      background: #34c759;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      font-weight: 400;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(52,199,89,0.35);
+      transition: all 0.15s;
+    }
+    .floating-cashier .fc-header .btn-add:hover {
+      background: #2fb350;
+      transform: scale(1.08);
+      box-shadow: 0 3px 10px rgba(52,199,89,0.5);
+    }
+    .floating-cashier .fc-header .btn-add:active { transform: scale(0.95); }
 
-.floating-cashier .fc-header .btn-close-fc {
-  background: #fee2e2;      /* merah lembut */
-  color: #ef4444;           /* X merah */
-  border: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-  flex-shrink: 0;
-}
-.floating-cashier .fc-header .btn-close-fc:hover {
-  background: #ef4444;
-  color: white;
-  transform: scale(1.1);
-}
-   
+    .floating-cashier .fc-header .btn-close-fc {
+      background: #fee2e2;
+      color: #ef4444;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .floating-cashier .fc-header .btn-close-fc:hover {
+      background: #ef4444;
+      color: white;
+      transform: scale(1.1);
+    }
 
     /* Search box */
     .fc-search {
@@ -322,9 +317,7 @@
       background: #eff6ff;
       border-color: #bfdbfe;
     }
-    .fc-item.new-item {
-      animation: slideIn 0.4s ease, flash 2s ease;
-    }
+    .fc-item.new-item { animation: slideIn 0.4s ease, flash 2s ease; }
     @keyframes slideIn {
       from { transform: translateY(-10px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -390,10 +383,7 @@
       font-family: inherit;
     }
     .fc-add-form input:focus { border-color: var(--c-primary); }
-    .fc-add-form .fc-form-actions {
-      display: flex;
-      gap: 6px;
-    }
+    .fc-add-form .fc-form-actions { display: flex; gap: 6px; }
     .fc-add-form .fc-form-actions button {
       flex: 1;
       padding: 7px;
@@ -413,25 +403,12 @@
       color: white;
     }
     .fc-add-form .fc-form-actions button:hover { opacity: 0.9; }
-    .fc-add-form .fc-form-actions button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
+    .fc-add-form .fc-form-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .fc-loading {
-      padding: 20px;
-      text-align: center;
-      color: var(--c-text-muted);
-      font-size: 0.78rem;
-    }
-    .fc-no-result {
-      padding: 20px;
-      text-align: center;
-      color: var(--c-text-muted);
-      font-size: 0.78rem;
-    }
+    .fc-loading { padding: 20px; text-align: center; color: var(--c-text-muted); font-size: 0.78rem; }
+    .fc-no-result { padding: 20px; text-align: center; color: var(--c-text-muted); font-size: 0.78rem; }
 
-    /* ============ CASHIER INPUTS (for receipt) ============ */
+    /* ============ CASHIER INPUTS ============ */
     .cashier-list {
       display: flex; flex-direction: column; gap: 6px;
       max-height: 400px;
@@ -456,7 +433,7 @@
     .cashier-row .resit-num {
       flex-shrink: 0;
       font-size: 0.7rem;
-      font-weight: 800;
+      font-weight: 600;
       color: white;
       background: var(--c-primary);
       padding: 3px 7px;
@@ -468,10 +445,10 @@
 
     .cashier-row .trx-num {
       flex-shrink: 0;
-      font-size: 0.62rem;
+      font-size: 0.75rem;
       color: var(--c-text-muted);
       font-family: 'Consolas', monospace;
-      max-width: 90px;
+      max-width: 120px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -484,14 +461,11 @@
       border: 1px solid #e2e8f0;
       border-radius: 5px;
       font-family: 'Consolas', monospace;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       background: white;
       color: var(--c-text);
     }
-    .cashier-row input:focus {
-      outline: none;
-      border-color: var(--c-primary);
-    }
+    .cashier-row input:focus { outline: none; border-color: var(--c-primary); }
 
     .cashier-row .status-pill {
       flex-shrink: 0;
@@ -500,8 +474,8 @@
       gap: 3px;
       font-size: 0.6rem;
       font-weight: 700;
-      padding: 3px 6px;
-      border-radius: 10px;
+      padding: 3px 4px;
+      border-radius: 5px;
       letter-spacing: 0.2px;
       text-transform: uppercase;
     }
@@ -515,7 +489,7 @@
       font-size: 0.72rem; font-weight: 600; color: var(--c-text-muted);
       text-transform: uppercase; letter-spacing: 0.5px;
     }
-    .field input[type="text"] {
+    .field input[type="text"], .field select {
       padding: 8px 12px;
       border: 1.5px solid var(--c-border);
       border-radius: var(--radius-sm);
@@ -524,7 +498,7 @@
       background: white;
       color: var(--c-text);
     }
-    .field input[type="text"]:focus {
+    .field input[type="text"]:focus, .field select:focus {
       outline: none;
       border-color: var(--c-primary);
       box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
@@ -647,7 +621,7 @@
       white-space: nowrap; letter-spacing: 3px; text-align: left;
     }
     .r-date-left {
-      font-size: 10pt; font-weight: 400; letter-spacing: -1px;
+      font-size: 10pt; font-weight: 400; letter-spacing: -0.7px;
       text-align: left; width: 100%; white-space: nowrap; overflow: hidden;
     }
     .r-trx-normal {
@@ -674,13 +648,13 @@
     .r-price-row .r-value { text-align: right; white-space: nowrap; }
 
     .r-returned-title {
-      font-size: var(--body-font-size); letter-spacing: -0.4px;
+      font-size: var(--body-font-size); letter-spacing: -0.8px;
       white-space: nowrap; text-align: left; width: 100%;
       overflow: hidden; font-weight: 900; line-height: 1.1;
     }
     .r-returned-detail {
-      font-size: var(--body-font-size); letter-spacing: -1.21px;
-      white-space: nowrap; text-align: left; width: 100%;
+      font-size: var(--body-font-size); letter-spacing: -0.7px;
+      white-space: nowrap; text-align: left; width: var(--max-width-header-trx);
       overflow: hidden; font-weight: 400; line-height: 1.1;
     }
     .r-einvoice-remark-log {
@@ -737,22 +711,45 @@
 
     /* ============ PRINT ============ */
     @media print {
-      @page { size: A4 portrait; margin: 0; }
-      html, body {
-        background: white !important; padding: 0 !important; margin: 0 !important;
-        width: 8.27in !important; display: block !important;
-        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      /* ===== A4 MODE ===== */
+      body.print-mode-a4 {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 8.27in !important;
+        display: block !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
-      .app-header, .form-panel, .card-header, .floating-cashier { display: none !important; }
-      .layout { display: block !important; }
-      .card, .card-body, .preview-panel, .preview-scroll {
-        box-shadow: none !important; padding: 0 !important; margin: 0 !important;
-        max-width: 100% !important; width: 100% !important;
-        border: none !important; overflow: visible !important;
-        display: block !important; background: white !important;
+
+      body.print-mode-a4 .app-header,
+      body.print-mode-a4 .form-panel,
+      body.print-mode-a4 .card-header,
+      body.print-mode-a4 .floating-cashier { display: none !important; }
+
+      body.print-mode-a4 .layout { display: block !important; }
+
+      body.print-mode-a4 .card,
+      body.print-mode-a4 .card-body,
+      body.print-mode-a4 .preview-panel,
+      body.print-mode-a4 .preview-scroll {
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        border: none !important;
+        overflow: visible !important;
+        display: block !important;
+        background: white !important;
       }
-      #receiptPreviewContainer { display: block !important; width: 100% !important; }
-      .a4-preview-page {
+
+      body.print-mode-a4 #receiptPreviewContainer {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      body.print-mode-a4 .a4-preview-page {
         width: 8.27in !important;
         height: 11.69in !important;
         box-shadow: none !important;
@@ -765,34 +762,147 @@
         grid-template-columns: 1fr 1fr;
         gap: 0.5in;
       }
-      .a4-preview-page:last-child { page-break-after: auto; break-after: auto; }
-      .a4-preview-page::after { display: none !important; }
-      .a4-preview-page.a4-single-col { grid-template-columns: 1fr; }
-      .split-part { min-height: 0 !important; height: 100% !important; }
-      .receipt-preview-item {
-        width: 3.2in !important; max-width: 3.2in !important;
-        font-size: var(--body-font-size) !important; font-weight: 600 !important;
-        padding: 0 !important; margin: 0 !important;
-        line-height: 1.05 !important; box-shadow: none !important;
-        letter-spacing: -1.2px; border-bottom: none !important;
-        padding-bottom: 0 !important; text-align: left !important;
+
+      body.print-mode-a4 .a4-preview-page:last-child { page-break-after: auto; break-after: auto; }
+      body.print-mode-a4 .a4-preview-page::after { display: none !important; }
+      body.print-mode-a4 .a4-preview-page.a4-single-col { grid-template-columns: 1fr; }
+      body.print-mode-a4 .split-part { min-height: 0 !important; height: 100% !important; }
+
+      body.print-mode-a4 .receipt-preview-item {
+        width: 3.2in !important;
+        max-width: 3.2in !important;
+        font-size: var(--body-font-size) !important;
+        font-weight: 600 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1.05 !important;
+        box-shadow: none !important;
+        letter-spacing: -1.2px;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+        text-align: left !important;
       }
-      .r-header-main { font-size: var(--header-main-size) !important; line-height: 1 !important; margin-top: 0 !important; text-align: center !important; }
-      .r-header-branch { font-size: var(--header-branch-size) !important; line-height: 1 !important; margin-top: 0 !important; margin-bottom: 2px !important; text-align: center !important; }
-      .r-dash { margin: 2px 0 !important; }
-      .barcode-container { margin: 0 !important; line-height: 0 !important; text-align: left !important; }
-      .barcode-container svg { width: 100% !important; display: block !important; margin: 0 !important; }
-      .barcode-text { font-size: var(--barcode-text-size) !important; letter-spacing: 4.5px !important; display: block; width: 100%; margin-top: 0 !important; padding-top: 0 !important; line-height: 1 !important; font-weight: 400 !important; text-align: center !important; }
-      .r-www { text-align: center !important; }
-      .r-membership-justify { letter-spacing: 3px !important; gap: 0 !important; text-align: left !important; }
-      .r-card-normal { text-align: left !important; letter-spacing: -0.3px; }
-      .r-trx-normal { text-align: left !important; }
-      .r-trx-flex { display: flex !important; justify-content: space-between !important; }
-      .r-date-left { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; }
-      .r-einvoice-remark { font-size: var(--body-font-size) !important; text-align: left !important; letter-spacing: -0.5px; }
-      .r-einvoice-remark-log { font-size: 10pt !important; text-align: left !important; letter-spacing: -1.4px; }
-      .r-returned-title { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; }
-      .r-returned-detail { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; }
+
+      body.print-mode-a4 .r-header-main { font-size: var(--header-main-size) !important; line-height: 1 !important; margin-top: 0 !important; text-align: center !important; }
+      body.print-mode-a4 .r-header-branch { font-size: var(--header-branch-size) !important; line-height: 1 !important; margin-top: 0 !important; margin-bottom: 2px !important; text-align: center !important; }
+      body.print-mode-a4 .r-dash { margin: 2px 0 !important; }
+      body.print-mode-a4 .barcode-container { margin: 0 !important; line-height: 0 !important; text-align: left !important; }
+      body.print-mode-a4 .barcode-container svg { width: 100% !important; display: block !important; margin: 0 !important; }
+      body.print-mode-a4 .barcode-text { font-size: var(--barcode-text-size) !important; letter-spacing: 4.5px !important; display: block; width: 100%; margin-top: 0 !important; padding-top: 0 !important; line-height: 1 !important; font-weight: 400 !important; text-align: center !important; }
+      body.print-mode-a4 .r-www { text-align: center !important; }
+      body.print-mode-a4 .r-membership-justify { letter-spacing: 3px !important; gap: 0 !important; text-align: left !important; }
+      body.print-mode-a4 .r-card-normal { text-align: left !important; letter-spacing: -0.3px; }
+      body.print-mode-a4 .r-trx-normal { text-align: left !important; }
+      body.print-mode-a4 .r-trx-flex { display: flex !important; justify-content: space-between !important; }
+      body.print-mode-a4 .r-date-left { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; letter-spacing: -1px; }
+      body.print-mode-a4 .r-einvoice-remark { font-size: var(--body-font-size) !important; text-align: left !important; letter-spacing: -0.5px; }
+      body.print-mode-a4 .r-einvoice-remark-log { font-size: 10pt !important; text-align: left !important; letter-spacing: -1.4px; }
+      body.print-mode-a4 .r-returned-title { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; letter-spacing: -1.2px; }
+      body.print-mode-a4 .r-returned-detail { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; letter-spacing: -1.2px; }
+
+      /* ===== THERMAL 80mm MODE ===== */
+      body.print-mode-thermal {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 80mm !important;
+        display: block !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body.print-mode-thermal .app-header,
+      body.print-mode-thermal .form-panel,
+      body.print-mode-thermal .card-header,
+      body.print-mode-thermal .floating-cashier { display: none !important; }
+
+      body.print-mode-thermal .layout { display: block !important; }
+
+      body.print-mode-thermal .card,
+      body.print-mode-thermal .card-body,
+      body.print-mode-thermal .preview-panel,
+      body.print-mode-thermal .preview-scroll {
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 80mm !important;
+        border: none !important;
+        overflow: visible !important;
+        display: block !important;
+        background: white !important;
+      }
+
+      body.print-mode-thermal #receiptPreviewContainer {
+        display: block !important;
+        width: 80mm !important;
+      }
+
+      body.print-mode-thermal .a4-preview-page {
+        width: 80mm !important;
+        height: auto !important;
+        min-height: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        page-break-after: auto !important;
+        break-after: auto !important;
+        overflow: visible !important;
+        display: block !important;
+        grid-template-columns: none !important;
+        gap: 0 !important;
+      }
+
+      body.print-mode-thermal .a4-preview-page::after { display: none !important; }
+
+      body.print-mode-thermal .split-part {
+        width: 80mm !important;
+        height: auto !important;
+        min-height: 0 !important;
+        display: block !important;
+        page-break-inside: auto !important;
+      }
+
+      body.print-mode-thermal .receipt-preview-item {
+        width: 80mm !important;
+        max-width: 80mm !important;
+        font-size: 9pt !important;
+        font-weight: 600 !important;
+        padding: 0 !important;
+        margin: 0 0 4mm 0 !important;
+        line-height: 1.05 !important;
+        box-shadow: none !important;
+        letter-spacing: -0.5px;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+        text-align: left !important;
+        background: white !important;
+        page-break-after: auto !important;
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+      }
+
+      body.print-mode-thermal .receipt-preview-item:last-child {
+        margin-bottom: 0 !important;
+        page-break-after: auto !important;
+      }
+
+      body.print-mode-thermal .r-header-main { font-size: 1.6rem !important; line-height: 1 !important; margin-top: 0 !important; text-align: center !important; }
+      body.print-mode-thermal .r-header-branch { font-size: 1.6rem !important; line-height: 1 !important; margin-top: 0 !important; margin-bottom: 2px !important; text-align: center !important; }
+      body.print-mode-thermal .r-dash { margin: 2px 0 !important; }
+      body.print-mode-thermal .barcode-container { margin: 0 !important; line-height: 0 !important; text-align: left !important; }
+      body.print-mode-thermal .barcode-container svg { width: 100% !important; display: block !important; margin: 0 !important; }
+      body.print-mode-thermal .barcode-text { font-size: 0.85rem !important; letter-spacing: 4.5px !important; display: block; width: 100%; margin-top: 0 !important; padding-top: 0 !important; line-height: 1 !important; font-weight: 400 !important; text-align: center !important; }
+      body.print-mode-thermal .r-www { text-align: center !important; }
+      body.print-mode-thermal .r-membership-justify { letter-spacing: 2px !important; gap: 0 !important; text-align: left !important; }
+      body.print-mode-thermal .r-card-normal { text-align: left !important; }
+      body.print-mode-thermal .r-trx-normal { text-align: left !important; }
+      body.print-mode-thermal .r-trx-flex { display: flex !important; justify-content: space-between !important; }
+      body.print-mode-thermal .r-date-left { font-size: 9pt !important; text-align: left !important; white-space: nowrap !important; }
+      body.print-mode-thermal .r-einvoice-remark { font-size: 9pt !important; text-align: left !important; }
+      body.print-mode-thermal .r-einvoice-remark-log { font-size: 9pt !important; text-align: left !important; }
+      body.print-mode-thermal .r-returned-title { font-size: 9pt !important; text-align: left !important; white-space: nowrap !important; }
+      body.print-mode-thermal .r-returned-detail { font-size: 9pt !important; text-align: left !important; white-space: nowrap !important; }
     }
 
     @media (max-width: 1100px) {
@@ -813,10 +923,9 @@
     </svg>
   </div>
   <div style="flex: 1;">
-    <h1>Multi-Receipt → A4 Auto Split</h1>
-    <p>Paste log → auto-detect cashier → print A4</p>
+    <h1>Multi-Receipt → A4 / Thermal Auto Split</h1>
+    <p>Paste log → auto-detect cashier → print A4 atau Thermal 80mm</p>
   </div>
-  <!-- Butang toggle Cashier -->
   <button class="btn-toggle-cashier" id="btnToggleCashier" title="Show/Hide Cashier Box">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -827,121 +936,132 @@
   </button>
 </header>
 
-  <div class="layout">
-    <div class="form-panel">
-
-      <div class="card">
-        <div class="card-header">
-          <div class="icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
-          </div>
-          <div>
-            <h2>Log E-Journal</h2>
-            <div class="subtitle">Paste satu atau lebih receipt</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <textarea id="logInput" class="log-textarea" placeholder="Paste POS logs here... (boleh paste multiple journals)"></textarea>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="icon success">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </div>
-          <div>
-            <h2>Cashier</h2>
-            <div class="subtitle">Auto-detected dari Google Sheet</div>
-          </div>
-        </div>
-        <div class="card-body">
-          <div id="cashierInputsContainer" class="cashier-list">
-            <div style="color: var(--c-text-muted); font-size: 0.8rem; text-align: center; padding: 12px;">Paste log untuk detect cashier</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card settings-card">
-        <div class="card-header settings-toggle" id="settingsToggle" style="cursor: pointer; user-select: none;">
-          <div class="icon warn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-          </div>
-          <div style="flex: 1;">
-            <h2>Settings</h2>
-            <div class="subtitle">PMY code & print margin</div>
-          </div>
-          <svg class="chevron" id="settingsChevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s; color: var(--c-text-muted);">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </div>
-        <div class="card-body" id="settingsBody" style="display: none;">
-          <div style="display: flex; flex-direction: column; gap: 16px;">
-            <div class="field">
-              <label>PMY Code</label>
-              <input type="text" id="pmyCodeInput" value="PMY LS6.2 20141230" placeholder="Contoh: PMY LS6.2 20141230">
-            </div>
-            <div>
-              <label style="font-size: 0.72rem; font-weight: 600; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span>Print Margin</span>
-                <span class="value-display" id="marginValue">0mm</span>
-              </label>
-              <input type="range" id="marginRange" min="0" max="20" step="1" value="0">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button class="btn-generate" id="generateBtn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 6 2 18 2 18 9"></polyline>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-          <rect x="6" y="14" width="12" height="8"></rect>
-        </svg>
-        CONVERT & PRINT
-      </button>
-    </div>
-
-    <div class="card preview-panel">
+<div class="layout">
+  <div class="form-panel">
+    <div class="card">
       <div class="card-header">
         <div class="icon">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
           </svg>
         </div>
         <div>
-          <h2>Live A4 Preview</h2>
-          <div class="subtitle">Auto-split ikut tinggi column A4</div>
+          <h2>Log E-Journal</h2>
+          <div class="subtitle">Paste satu atau lebih receipt</div>
         </div>
       </div>
-      <div class="preview-scroll" id="receiptPreviewContainer">
-        <div class="empty-state">
-          <div class="empty-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-            </svg>
-          </div>
-          <h3>Belum ada receipt</h3>
-          <p>Paste log E-Journal di sebelah kiri untuk mula preview</p>
+      <div class="card-body">
+        <textarea id="logInput" class="log-textarea" placeholder="Paste POS logs here... (boleh paste multiple journals)"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="icon success">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div>
+          <h2>Cashier</h2>
+          <div class="subtitle">Auto-detected dari Google Sheet</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="cashierInputsContainer" class="cashier-list">
+          <div style="color: var(--c-text-muted); font-size: 0.8rem; text-align: center; padding: 12px;">Paste log untuk detect cashier</div>
         </div>
       </div>
     </div>
+
+    <div class="card settings-card">
+      <div class="card-header settings-toggle" id="settingsToggle" style="cursor: pointer; user-select: none;">
+        <div class="icon warn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </div>
+        <div style="flex: 1;">
+          <h2>Settings</h2>
+          <div class="subtitle">Paper size, PMY code & print margin</div>
+        </div>
+        <svg class="chevron" id="settingsChevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s; color: var(--c-text-muted);">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="card-body" id="settingsBody" style="display: none;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="field">
+            <label>Paper Size (untuk print)</label>
+            <select id="paperSizeSelect">
+              <option value="a4" selected>A4 (8.27 × 11.69 in)</option>
+              <option value="thermal">Thermal 80mm (3.15 in)</option>
+            </select>
+            <div style="font-size: 0.7rem; color: var(--c-text-muted); margin-top: 4px;">
+              A4 = 2 column split · Thermal = 1 column flow
+            </div>
+          </div>
+
+          <div class="field">
+            <label>PMY Code</label>
+            <input type="text" id="pmyCodeInput" value="PMY LS6.2 20141230" placeholder="Contoh: PMY LS6.2 20141230">
+          </div>
+
+          <div>
+            <label style="font-size: 0.72rem; font-weight: 600; color: var(--c-text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span>Print Margin</span>
+              <span class="value-display" id="marginValue">0mm</span>
+            </label>
+            <input type="range" id="marginRange" min="0" max="20" step="1" value="0">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-generate" id="generateBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+        <rect x="6" y="14" width="12" height="8"></rect>
+      </svg>
+      CONVERT & PRINT
+    </button>
   </div>
+
+  <div class="card preview-panel">
+    <div class="card-header">
+      <div class="icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </div>
+      <div>
+        <h2>Live A4 Preview</h2>
+        <div class="subtitle">Auto-split ikut tinggi column A4</div>
+      </div>
+    </div>
+    <div class="preview-scroll" id="receiptPreviewContainer">
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+          </svg>
+        </div>
+        <h3>Belum ada receipt</h3>
+        <p>Paste log E-Journal di sebelah kiri untuk mula preview</p>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- ============ FLOATING CASHIER BOX ============ -->
@@ -958,7 +1078,6 @@
     <button class="btn-close-fc" id="btnCloseFc" title="Tutup (Ctrl+Shift+C)">×</button>
   </div>
 
-  <!-- Search box -->
   <div class="fc-search">
     <input type="text" id="fcSearchInput" placeholder="Cari ID atau nama...">
     <button class="fc-clear" id="fcClearBtn" title="Clear">x</button>
@@ -987,27 +1106,27 @@
   let fcSearchQuery = '';
 
   async function loadCashierMap() {
-  try {
-    const res = await fetch(`${CASHIER_API_URL}?t=${Date.now()}`);
-    const json = await res.json();
-    if (json.success && Array.isArray(json.data)) {
-      cashierRecords = json.data;
-      CASHIER_MAP = {};
-      json.data.forEach(r => {
-        if (r.id && r.name && r.name.trim()) {
-          CASHIER_MAP[r.id] = r.name.trim();
-        }
-      });
-      cashierLoaded = true;
-      console.log(`✅ Loaded ${Object.keys(CASHIER_MAP).length} cashier dari Google Sheet`);
-      renderFloatingCashier();        // ← WAJIB TAMBAH BALIK
-    } else {
-      console.warn('⚠️ Gagal load cashier:', json.error);
+    try {
+      const res = await fetch(`${CASHIER_API_URL}?t=${Date.now()}`);
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data)) {
+        cashierRecords = json.data;
+        CASHIER_MAP = {};
+        json.data.forEach(r => {
+          if (r.id && r.name && r.name.trim()) {
+            CASHIER_MAP[r.id] = r.name.trim();
+          }
+        });
+        cashierLoaded = true;
+        console.log(`✅ Loaded ${Object.keys(CASHIER_MAP).length} cashier dari Google Sheet`);
+        renderFloatingCashier();
+      } else {
+        console.warn('⚠️ Gagal load cashier:', json.error);
+      }
+    } catch (err) {
+      console.error('❌ Error load cashier:', err);
     }
-  } catch (err) {
-    console.error('❌ Error load cashier:', err);
   }
-}
 
   async function addCashierToSheet(id, name) {
     const res = await fetch(CASHIER_API_URL, {
@@ -1046,15 +1165,13 @@
     const q = fcSearchQuery.trim().toLowerCase();
 
     if (!q) {
-      // Default: 9 terbaru
       displayRecords = cashierRecords.slice(0, 9);
     } else {
-      // Search: cari ID atau nama yang mengandungi query
       displayRecords = cashierRecords.filter(r => {
         const idMatch = String(r.id).toLowerCase().includes(q);
         const nameMatch = String(r.name).toLowerCase().includes(q);
         return idMatch || nameMatch;
-      }).slice(0, 30); // limit 30 hasil
+      }).slice(0, 30);
     }
 
     if (displayRecords.length === 0) {
@@ -1068,7 +1185,7 @@
 
     fcList.innerHTML = displayRecords.map((r, i) => `
       <div class="fc-item">
-        <span class="fc-num">${q ? (i + 1) : (i + 1)}</span>
+        <span class="fc-num">${i + 1}</span>
         <span class="fc-id">${highlightMatch(r.id, fcSearchQuery)}</span>
         <span class="fc-name" title="${escapeHtml(r.name)}">${highlightMatch(r.name, fcSearchQuery)}</span>
       </div>
@@ -1133,7 +1250,6 @@
     }
   });
 
-  // Search events
   fcSearchInput.addEventListener('input', (e) => {
     fcSearchQuery = e.target.value;
     fcClearBtn.classList.toggle('show', fcSearchQuery.length > 0);
@@ -1161,6 +1277,7 @@
   const pmyCodeInput = document.getElementById('pmyCodeInput');
   const marginRange = document.getElementById('marginRange');
   const marginValue = document.getElementById('marginValue');
+  const paperSizeSelect = document.getElementById('paperSizeSelect');
 
   const DEFAULT_CASHIER = 'KAHIRUL YAZID';
   const MEASURE_STYLE = 'padding:0 !important; margin:0 !important; border:none !important; box-shadow:none !important;';
@@ -1174,7 +1291,7 @@
     'MAE', 'CIMB', 'MAYBANK', 'PUBLIC BANK', 'RHB', 'HONG LEONG',
     'INSTALLMENT', 'EPP', 'BNPL', 'ATOME', 'SPAYLATER', 'HUTANG',
     'SHOPEEPAY', 'LAZADA', 'ZALORA', 'FOODPANDA', 'GRABFOOD',
-    'DEBIT CARD', 'CREDIT CARD', 'PCV', 'PDV', 'MRV', 'CHANGE IN CASH'
+    'DEBIT CARD', 'CREDIT CARD', 'PCV', 'PDV', 'MRV', 'CHANGE IN CASH', 'PARKSON CARD'
   ];
 
   let cashierNames = [];
@@ -1204,7 +1321,6 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // ============ CASHIER ID EXTRACTION ============
   function extractCashierId(receiptText) {
     const mainMatch = receiptText.match(/\|N\d{7}\s+(\d{6})\s+\d+\s+\d+\s+\d{2}\/\d{2}\/\d{2}\s+\d{2}:\d{2}/);
     if (mainMatch && mainMatch[1]) return mainMatch[1];
@@ -1283,7 +1399,7 @@
       const div = document.createElement('div');
       div.className = rowClass;
       div.innerHTML = `
-        <span class="resit-num">R${i + 1}</span>
+        <span class="resit-num">Resit ${i + 1}</span>
         <span class="trx-num" title="${escapeHtml(trxTag)}">${escapeHtml(trxTag || '—')}</span>
         <input type="text" data-index="${i}" value="${escapeHtml(cashierNames[i])}" placeholder="Nama">
         ${statusPill}
@@ -1400,16 +1516,16 @@
             </div>`);
           }
         }
-        else if (txt.match(/PARKSON CARD\s*:\s*([\d\.,]+)/i)) {
-          const match = txt.match(/PARKSON CARD\s*:\s*([\d\.,]+)/i);
+        else if (txt.match(/PARKSON CARD\s*:\s*(-?[\d\.,]+)/i)) {
+          const match = txt.match(/PARKSON CARD\s*:\s*(-?[\d\.,]+)/i);
           data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
             <span class="r-item-name">PARKSON CARD :</span>
             <span class="r-item-price">${escapeHtml(match[1])}</span>
           </div>`);
         }
         else if (/^\d{6,12}\s+[A-Z]/i.test(txt)) {
-          if (txt.match(/[\d\.,]+$/) && !txt.includes('X')) {
-            const match = txt.match(/^(.*?)\s+([\d\.,]+)$/);
+          if (txt.match(/-?[\d\.,]+$/) && !txt.includes('X')) {
+            const match = txt.match(/^(.*?)\s+(-?[\d\.,]+)$/);
             if (match) {
               data.bodyItems.push(`<div class="r-item-row ${nClass}">
                 <span class="r-item-name">${escapeHtml(match[1].trim())}</span>
@@ -1442,7 +1558,7 @@
           data.bodyItems.push(`<div class="r-price-row ${nClass}"><span class="r-label">Number of Items:</span><span class="r-value">${escapeHtml(count)}</span></div>`);
         }
         else if (txt.match(/NORMAL POINTS|EXTRA POINTS|TOTAL POINTS/i)) {
-          const match = txt.match(/^(.*?)\s*:\s*([\d\.,]+)$/);
+          const match = txt.match(/^(.*?)\s*:\s*(-?[\d\.,]+)$/);
           if (match) {
             data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
               <span class="r-item-name">${escapeHtml(match[1].trim())} :</span>
@@ -1453,7 +1569,7 @@
           }
         }
         else if (txt.match(/BALANCE|REDEEMABLE/i)) {
-          const match = txt.match(/^(.*?)\s*:\s*([\d\.,A-Z]+)$/);
+          const match = txt.match(/^(.*?)\s*:\s*(-?[\d\.,A-Z]+)$/);
           if (match) {
             data.bodyItems.push(`<div class="r-nowrap ${nClass}">${escapeHtml(match[1].trim())} :${escapeHtml(match[2].trim())}</div>`);
           } else {
@@ -1848,10 +1964,51 @@
   });
   pmyCodeInput.addEventListener('input', updatePreview);
 
+  // ============ PAPER SIZE + PRINT ============
+  const savedPaper = localStorage.getItem('paperSize') || 'a4';
+  paperSizeSelect.value = savedPaper;
+  applyPageSize(savedPaper);
+
+  function applyPageSize(size) {
+    const styleId = 'dynamic-page-size';
+    let styleEl = document.getElementById(styleId);
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = styleId;
+      document.head.appendChild(styleEl);
+    }
+
+    if (size === 'thermal') {
+      styleEl.textContent = `@media print { @page { size: 80mm auto; margin: 0 !important; } }`;
+    } else {
+      styleEl.textContent = `@media print { @page { size: A4 portrait; margin: 0 !important; } }`;
+    }
+  }
+
+  paperSizeSelect.addEventListener('change', (e) => {
+    const size = e.target.value;
+    localStorage.setItem('paperSize', size);
+    applyPageSize(size);
+    showToast('Paper size: ' + (size === 'a4' ? 'A4' : 'Thermal 80mm'), 'success');
+  });
+
   generateBtn.addEventListener('click', (e) => {
     e.preventDefault();
     updatePreview();
-    setTimeout(() => window.print(), 400);
+
+    const size = paperSizeSelect.value;
+    applyPageSize(size);
+    document.body.classList.remove('print-mode-a4', 'print-mode-thermal');
+    document.body.classList.add(size === 'thermal' ? 'print-mode-thermal' : 'print-mode-a4');
+
+    document.documentElement.style.setProperty('--print-margin', marginRange.value + 'mm');
+
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove('print-mode-a4', 'print-mode-thermal');
+      }, 1000);
+    }, 400);
   });
 
   marginRange.addEventListener('input', function() {
@@ -1860,6 +2017,7 @@
     document.documentElement.style.setProperty('--print-margin', val + 'mm');
   });
 
+  // ============ SETTINGS TOGGLE ============
   const settingsToggle = document.getElementById('settingsToggle');
   const settingsBody = document.getElementById('settingsBody');
   const settingsChevron = document.getElementById('settingsChevron');
@@ -1870,46 +2028,43 @@
     settingsChevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
   });
 
-// ============ TOGGLE FLOATING CASHIER ============
-const floatingCashierEl = document.getElementById('floatingCashier');
-const btnToggleCashier = document.getElementById('btnToggleCashier');
+  // ============ TOGGLE FLOATING CASHIER ============
+  const floatingCashierEl = document.getElementById('floatingCashier');
+  const btnToggleCashier = document.getElementById('btnToggleCashier');
 
-const cashierBoxState = localStorage.getItem('cashierBoxVisible') !== 'hidden';
+  const cashierBoxState = localStorage.getItem('cashierBoxVisible') !== 'hidden';
 
-function applyCashierBoxState(visible) {
-  if (visible) {
-    floatingCashierEl.classList.remove('hidden');
-    btnToggleCashier.classList.add('active');
-  } else {
-    floatingCashierEl.classList.add('hidden');
-    btnToggleCashier.classList.remove('active');
+  function applyCashierBoxState(visible) {
+    if (visible) {
+      floatingCashierEl.classList.remove('hidden');
+      btnToggleCashier.classList.add('active');
+    } else {
+      floatingCashierEl.classList.add('hidden');
+      btnToggleCashier.classList.remove('active');
+    }
+    localStorage.setItem('cashierBoxVisible', visible ? 'visible' : 'hidden');
   }
-  localStorage.setItem('cashierBoxVisible', visible ? 'visible' : 'hidden');
-}
 
-applyCashierBoxState(cashierBoxState);
+  applyCashierBoxState(cashierBoxState);
 
-// X button — tutup cashier box
-document.getElementById('btnCloseFc').addEventListener('click', () => {
-  applyCashierBoxState(false);
-});
+  document.getElementById('btnCloseFc').addEventListener('click', () => {
+    applyCashierBoxState(false);
+  });
 
-btnToggleCashier.addEventListener('click', () => {
-  const isCurrentlyVisible = !floatingCashierEl.classList.contains('hidden');
-  applyCashierBoxState(!isCurrentlyVisible);
-});
-
-// Keyboard shortcut: Ctrl+Shift+C
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-    e.preventDefault();
+  btnToggleCashier.addEventListener('click', () => {
     const isCurrentlyVisible = !floatingCashierEl.classList.contains('hidden');
     applyCashierBoxState(!isCurrentlyVisible);
-  }
-});
+  });
 
-// ============ INIT ============
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+      e.preventDefault();
+      const isCurrentlyVisible = !floatingCashierEl.classList.contains('hidden');
+      applyCashierBoxState(!isCurrentlyVisible);
+    }
+  });
 
+  // ============ INIT ============
   async function init() {
     await loadCashierMap();
     rebuildCashierInputs();
