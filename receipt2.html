@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Receipt → A4 / Thermal Auto Split</title>
+  <title>Multi-Receipt ? A4 / Thermal Auto Split</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=JetBrains+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=VT323&family=Share+Tech+Mono&family=Space+Mono:wght@400;700&family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --body-font-size: 10pt;
@@ -14,23 +15,34 @@
       --max-width-header-trx: 6.7cm;
       --max-width-item-number: 6.2cm;
       --max-width-barcode-last: 7.2cm;
-      --receipt-width: 3.2in;
-      --print-margin: 0mm;
+      --receipt-width: 80mm;
+      --print-margin: 4mm;
 
-      --c-bg: #f1f5f9;
+      /* Burgundy & Gold Theme */
+      --c-bg: #f5f0eb;
       --c-surface: #ffffff;
-      --c-border: #e2e8f0;
-      --c-text: #0f172a;
-      --c-text-muted: #64748b;
-      --c-primary: #2563eb;
-      --c-success: #10b981;
-      --c-success-hover: #059669;
-      --c-warning: #f59e0b;
-      --c-danger: #ef4444;
+      --c-border: #e8e0d8;
+      --c-text: #2c1810;
+      --c-text-muted: #8b7a6b;
+      --c-primary: #6b1f2e;        /* burgundy */
+      --c-primary-light: #8a2a3d;
+      --c-primary-dark: #4a1520;
+      --c-accent: #c9a84c;         /* gold */
+      --c-accent-light: #e0c878;
+      --c-accent-dark: #a8882e;
+      --c-success: #4a7c59;
+      --c-success-hover: #3a6347;
+      --c-warning: #b8860b;
+      --c-danger: #a83232;
+      --c-gold: #c9a84c;
+      --c-burgundy: #6b1f2e;
+
       --radius-sm: 8px;
       --radius-md: 12px;
       --radius-lg: 16px;
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(107,31,46,0.08);
+
+      --receipt-font: 'Roboto Mono', 'Consolas', monospace;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -50,14 +62,19 @@
     }
     .app-header .logo {
       width: 44px; height: 44px;
-      background: linear-gradient(135deg, var(--c-primary), #1e40af);
+      background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
       border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
-      color: white;
-      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+      color: var(--c-accent);
+      box-shadow: 0 4px 12px rgba(107,31,46,0.3);
       flex-shrink: 0;
+      border: 2px solid var(--c-accent);
     }
-    .app-header h1 { font-size: 1.25rem; font-weight: 700; color: var(--c-text); letter-spacing: -0.3px; }
+    .app-header h1 {
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--c-primary);
+      letter-spacing: -0.3px;
+    }
     .app-header p { font-size: 0.8rem; color: var(--c-text-muted); margin-top: 2px; }
 
     .btn-toggle-cashier {
@@ -65,44 +82,43 @@
       align-items: center;
       gap: 8px;
       padding: 9px 16px;
-      border: 1.5px solid var(--c-border);
+      border: 1.5px solid var(--c-accent);
       background: var(--c-surface);
-      color: var(--c-text);
+      color: var(--c-primary);
       border-radius: 10px;
       font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 3px rgba(107,31,46,0.08);
       font-family: inherit;
     }
     .btn-toggle-cashier:hover {
+      background: var(--c-primary);
+      color: var(--c-accent);
       border-color: var(--c-primary);
-      color: var(--c-primary);
-      background: #eff6ff;
     }
     .btn-toggle-cashier.active {
-      background: var(--c-success);
-      border-color: var(--c-success);
-      color: white;
-      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+      background: var(--c-primary);
+      border-color: var(--c-primary);
+      color: var(--c-accent);
+      box-shadow: 0 4px 12px rgba(107,31,46,0.3);
     }
     .btn-toggle-cashier.active:hover {
-      background: var(--c-success-hover);
-      border-color: var(--c-success-hover);
-      color: white;
+      background: var(--c-primary-dark);
+      border-color: var(--c-primary-dark);
     }
     .btn-toggle-cashier .toggle-dot {
       display: inline-block;
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #cbd5e1;
+      background: var(--c-text-muted);
       transition: background 0.15s;
     }
     .btn-toggle-cashier.active .toggle-dot {
-      background: #bbf7d0;
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+      background: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.3);
     }
 
     .floating-cashier.hidden { display: none !important; }
@@ -125,18 +141,20 @@
       padding: 14px 18px;
       border-bottom: 1px solid var(--c-border);
       display: flex; align-items: center; gap: 10px;
-      background: linear-gradient(180deg, #fafbfc, #f8fafc);
+      background: linear-gradient(180deg, #faf8f5, #f5f0eb);
     }
     .card-header .icon {
       width: 32px; height: 32px;
       border-radius: var(--radius-sm);
-      background: #eff6ff; color: var(--c-primary);
+      background: #f5ebe0;
+      color: var(--c-primary);
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
+      border: 1px solid var(--c-border);
     }
-    .card-header .icon.success { background: #ecfdf5; color: var(--c-success); }
-    .card-header .icon.warn { background: #fffbeb; color: var(--c-warning); }
-    .card-header h2 { font-size: 0.95rem; font-weight: 600; color: var(--c-text); letter-spacing: -0.2px; }
+    .card-header .icon.success { background: #e8f5ec; color: var(--c-success); }
+    .card-header .icon.warn { background: #fdf3e0; color: var(--c-warning); }
+    .card-header h2 { font-size: 0.95rem; font-weight: 600; color: var(--c-primary); letter-spacing: -0.2px; }
     .card-header .subtitle { font-size: 0.75rem; color: var(--c-text-muted); margin-top: 1px; }
     .card-body { padding: 16px 18px; }
 
@@ -148,7 +166,7 @@
       padding-right: 4px;
     }
     .form-panel::-webkit-scrollbar { width: 6px; }
-    .form-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .form-panel::-webkit-scrollbar-thumb { background: var(--c-accent); border-radius: 3px; }
 
     .log-textarea {
       width: 100%;
@@ -159,18 +177,18 @@
       border-radius: var(--radius-md);
       font-family: 'Consolas', monospace;
       font-size: 0.8rem;
-      background: #0f172a;
-      color: #38bdf8;
+      background: #1a0f12;
+      color: var(--c-accent-light);
       resize: vertical;
       line-height: 1.5;
       transition: border-color 0.15s, box-shadow 0.15s;
     }
     .log-textarea:focus {
       outline: none;
-      border-color: var(--c-primary);
-      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
     }
-    .log-textarea::placeholder { color: #64748b; }
+    .log-textarea::placeholder { color: #6b5a4e; }
 
     /* ============ FLOATING CASHIER BOX ============ */
     .floating-cashier {
@@ -181,7 +199,7 @@
       max-height: 85vh;
       background: var(--c-surface);
       border-radius: var(--radius-lg);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+      box-shadow: 0 12px 32px rgba(107,31,46,0.18);
       border: 1px solid var(--c-border);
       display: flex;
       flex-direction: column;
@@ -190,7 +208,7 @@
     }
     .floating-cashier .fc-header {
       padding: 12px 14px;
-      background: linear-gradient(180deg, #fafbfc, #f8fafc);
+      background: linear-gradient(180deg, #faf8f5, #f5f0eb);
       border-bottom: 1px solid var(--c-border);
       display: flex;
       align-items: center;
@@ -199,18 +217,20 @@
     .floating-cashier .fc-header .icon {
       width: 28px; height: 28px;
       border-radius: 7px;
-      background: #ecfdf5; color: var(--c-success);
+      background: #f5ebe0;
+      color: var(--c-primary);
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0;
+      border: 1px solid var(--c-border);
     }
     .floating-cashier .fc-header h3 {
       font-size: 0.85rem;
       font-weight: 700;
-      color: var(--c-text);
+      color: var(--c-primary);
       flex: 1;
     }
     .floating-cashier .fc-header .btn-add {
-      background: #34c759;
+      background: var(--c-success);
       color: white;
       border: none;
       width: 30px;
@@ -223,19 +243,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 2px 6px rgba(52,199,89,0.35);
+      box-shadow: 0 2px 6px rgba(74,124,89,0.35);
       transition: all 0.15s;
     }
     .floating-cashier .fc-header .btn-add:hover {
-      background: #2fb350;
+      background: var(--c-success-hover);
       transform: scale(1.08);
-      box-shadow: 0 3px 10px rgba(52,199,89,0.5);
+      box-shadow: 0 3px 10px rgba(74,124,89,0.5);
     }
     .floating-cashier .fc-header .btn-add:active { transform: scale(0.95); }
 
     .floating-cashier .fc-header .btn-close-fc {
-      background: #fee2e2;
-      color: #ef4444;
+      background: #f5e0e0;
+      color: var(--c-danger);
       border: none;
       width: 28px;
       height: 28px;
@@ -251,7 +271,7 @@
       flex-shrink: 0;
     }
     .floating-cashier .fc-header .btn-close-fc:hover {
-      background: #ef4444;
+      background: var(--c-danger);
       color: white;
       transform: scale(1.1);
     }
@@ -260,7 +280,7 @@
     .fc-search {
       padding: 10px 12px;
       border-bottom: 1px solid var(--c-border);
-      background: #f8fafc;
+      background: #faf8f5;
       position: relative;
     }
     .fc-search input {
@@ -274,7 +294,7 @@
       font-family: inherit;
       transition: border-color 0.15s;
     }
-    .fc-search input:focus { border-color: var(--c-primary); }
+    .fc-search input:focus { border-color: var(--c-accent); box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
     .fc-search .fc-clear {
       position: absolute;
       right: 20px;
@@ -300,7 +320,7 @@
       min-height: 100px;
     }
     .fc-list::-webkit-scrollbar { width: 5px; }
-    .fc-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .fc-list::-webkit-scrollbar-thumb { background: var(--c-accent); border-radius: 3px; }
 
     .fc-item {
       display: flex;
@@ -308,14 +328,14 @@
       gap: 8px;
       padding: 7px 10px;
       border-radius: 7px;
-      background: #f8fafc;
+      background: #faf8f5;
       border: 1px solid transparent;
       transition: all 0.15s;
       font-size: 0.78rem;
     }
     .fc-item:hover {
-      background: #eff6ff;
-      border-color: #bfdbfe;
+      background: #f5ebe0;
+      border-color: var(--c-accent-light);
     }
     .fc-item.new-item { animation: slideIn 0.4s ease, flash 2s ease; }
     @keyframes slideIn {
@@ -323,22 +343,22 @@
       to { transform: translateY(0); opacity: 1; }
     }
     @keyframes flash {
-      0% { background: #bbf7d0; }
-      100% { background: #f8fafc; }
+      0% { background: #f0e6d0; }
+      100% { background: #faf8f5; }
     }
     .fc-item .fc-num {
       flex-shrink: 0;
       font-size: 0.62rem;
       font-weight: 800;
       color: var(--c-primary);
-      background: #dbeafe;
+      background: #f0e6d8;
       width: 20px; height: 20px;
       border-radius: 5px;
       display: flex; align-items: center; justify-content: center;
     }
     .fc-item:first-child .fc-num {
-      background: var(--c-success);
-      color: white;
+      background: var(--c-accent);
+      color: var(--c-primary-dark);
     }
     .fc-item .fc-id {
       font-family: 'Consolas', monospace;
@@ -357,8 +377,8 @@
       font-size: 0.78rem;
     }
     .fc-item mark {
-      background: #fde68a;
-      color: var(--c-text);
+      background: var(--c-accent-light);
+      color: var(--c-primary-dark);
       padding: 0 2px;
       border-radius: 2px;
       font-weight: 800;
@@ -368,7 +388,7 @@
     .fc-add-form {
       padding: 10px;
       border-top: 1px solid var(--c-border);
-      background: #f8fafc;
+      background: #faf8f5;
       display: none;
       flex-direction: column;
       gap: 8px;
@@ -382,7 +402,7 @@
       outline: none;
       font-family: inherit;
     }
-    .fc-add-form input:focus { border-color: var(--c-primary); }
+    .fc-add-form input:focus { border-color: var(--c-accent); }
     .fc-add-form .fc-form-actions { display: flex; gap: 6px; }
     .fc-add-form .fc-form-actions button {
       flex: 1;
@@ -395,7 +415,7 @@
       transition: opacity 0.15s;
     }
     .fc-add-form .fc-form-actions .btn-cancel {
-      background: #e2e8f0;
+      background: var(--c-border);
       color: var(--c-text);
     }
     .fc-add-form .fc-form-actions .btn-save {
@@ -416,19 +436,19 @@
       padding-right: 4px;
     }
     .cashier-list::-webkit-scrollbar { width: 6px; }
-    .cashier-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .cashier-list::-webkit-scrollbar-thumb { background: var(--c-accent); border-radius: 3px; }
 
     .cashier-row {
       display: flex; align-items: center; gap: 8px;
       padding: 8px 10px;
       border: 1px solid var(--c-border);
       border-radius: var(--radius-sm);
-      background: #f8fafc;
+      background: #faf8f5;
       transition: border-color 0.15s;
     }
-    .cashier-row:hover { border-color: #cbd5e1; }
-    .cashier-row.detected { background: #f0fdf4; border-color: #bbf7d0; }
-    .cashier-row.unknown { background: #fef2f2; border-color: #fecaca; }
+    .cashier-row:hover { border-color: var(--c-accent); }
+    .cashier-row.detected { background: #f0f5ec; border-color: #c8d8b8; }
+    .cashier-row.unknown { background: #fcf0f0; border-color: #e8c8c8; }
 
     .cashier-row .resit-num {
       flex-shrink: 0;
@@ -458,14 +478,14 @@
       flex: 1;
       min-width: 0;
       padding: 6px 8px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--c-border);
       border-radius: 5px;
       font-family: 'Consolas', monospace;
       font-size: 0.75rem;
       background: white;
       color: var(--c-text);
     }
-    .cashier-row input:focus { outline: none; border-color: var(--c-primary); }
+    .cashier-row input:focus { outline: none; border-color: var(--c-accent); }
 
     .cashier-row .status-pill {
       flex-shrink: 0;
@@ -479,10 +499,10 @@
       letter-spacing: 0.2px;
       text-transform: uppercase;
     }
-    .status-pill.auto { background: #dcfce7; color: #166534; }
-    .status-pill.manual { background: #dbeafe; color: #1e40af; }
-    .status-pill.unknown { background: #fee2e2; color: #991b1b; }
-    .status-pill.loading { background: #f1f5f9; color: #64748b; }
+    .status-pill.auto { background: #dce8d0; color: #2e5a1e; }
+    .status-pill.manual { background: #e8dce8; color: #4a1e5a; }
+    .status-pill.unknown { background: #f0dce0; color: #5a1e28; }
+    .status-pill.loading { background: #f0f0f0; color: #64748b; }
 
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field label {
@@ -500,49 +520,53 @@
     }
     .field input[type="text"]:focus, .field select:focus {
       outline: none;
-      border-color: var(--c-primary);
-      box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 2px rgba(201,168,76,0.15);
     }
     .field .value-display {
       display: inline-block;
-      background: #dbeafe; color: #1e40af;
+      background: #f0e6d8;
+      color: var(--c-primary);
       padding: 2px 8px; border-radius: 4px;
       font-size: 0.72rem; font-weight: 700;
     }
 
     input[type="range"] {
       width: 100%; height: 6px;
-      border-radius: 3px; background: #e2e8f0;
+      border-radius: 3px; background: var(--c-border);
       outline: none; -webkit-appearance: none; appearance: none;
     }
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none; appearance: none;
       width: 18px; height: 18px; border-radius: 50%;
-      background: var(--c-primary); cursor: pointer;
+      background: var(--c-accent); cursor: pointer;
       border: 3px solid white;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 1px 4px rgba(107,31,46,0.2);
     }
     input[type="range"]::-moz-range-thumb {
       width: 18px; height: 18px; border-radius: 50%;
-      background: var(--c-primary); cursor: pointer;
+      background: var(--c-accent); cursor: pointer;
       border: 3px solid white;
     }
 
     .btn-generate {
       width: 100%;
-      background: linear-gradient(135deg, var(--c-success), var(--c-success-hover));
-      color: white; border: none; padding: 14px;
+      background: linear-gradient(135deg, var(--c-primary), var(--c-primary-dark));
+      color: var(--c-accent);
+      border: 1px solid var(--c-accent);
+      padding: 14px;
       border-radius: var(--radius-md);
       font-weight: 700; font-size: 0.95rem;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       gap: 10px;
       transition: transform 0.1s, box-shadow 0.15s;
-      box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+      box-shadow: 0 4px 12px rgba(107,31,46,0.3);
     }
     .btn-generate:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(16,185,129,0.4);
+      box-shadow: 0 6px 16px rgba(107,31,46,0.4);
+      background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary));
     }
 
     .preview-panel { min-height: 400px; display: flex; flex-direction: column; }
@@ -550,7 +574,7 @@
       padding: 20px;
       display: flex; flex-direction: column; align-items: center;
       gap: 20px; overflow-x: auto;
-      background: #f8fafc;
+      background: #faf8f5;
     }
 
     .empty-state {
@@ -560,22 +584,26 @@
     }
     .empty-state .empty-icon {
       width: 64px; height: 64px; border-radius: 50%;
-      background: #e2e8f0;
+      background: var(--c-border);
       display: flex; align-items: center; justify-content: center;
-      color: #94a3b8;
+      color: var(--c-text-muted);
     }
-    .empty-state h3 { font-size: 0.95rem; font-weight: 600; color: var(--c-text); }
+    .empty-state h3 { font-size: 0.95rem; font-weight: 600; color: var(--c-primary); }
     .empty-state p { font-size: 0.8rem; max-width: 300px; line-height: 1.5; }
 
     /* ============ RECEIPT STYLES ============ */
     .receipt-preview-item {
       background: #fafafa; padding: 10px 5px;
-      font-family: 'Consolas', monospace; font-weight: 400;
+      font-family: var(--receipt-font);
+      font-weight: 400;
       font-size: var(--body-font-size); line-height: 1.05;
-      color: #000; width: 3.2in; min-width: 3.2in; max-width: 3.2in;
+      color: #000; width: 80mm; min-width: 80mm; max-width: 80mm;
       box-shadow: 0 0 10px rgba(0,0,0,0.05); letter-spacing: -1.2px;
       margin-bottom: 20px; border-bottom: 2px dashed #94a3b8;
       padding-bottom: 10px; text-align: left;
+    }
+    .receipt-preview-item * {
+      font-family: var(--receipt-font) !important;
     }
     .receipt-preview-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
 
@@ -621,7 +649,7 @@
       white-space: nowrap; letter-spacing: 3px; text-align: left;
     }
     .r-date-left {
-      font-size: 10pt; font-weight: 400; letter-spacing: -0.7px;
+      font-size: 10pt; font-weight: 400; letter-spacing: -1px;
       text-align: left; width: 100%; white-space: nowrap; overflow: hidden;
     }
     .r-trx-normal {
@@ -769,42 +797,17 @@
       body.print-mode-a4 .split-part { min-height: 0 !important; height: 100% !important; }
 
       body.print-mode-a4 .receipt-preview-item {
-        width: 3.2in !important;
-        max-width: 3.2in !important;
-        font-size: var(--body-font-size) !important;
-        font-weight: 600 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        line-height: 1.05 !important;
         box-shadow: none !important;
-        letter-spacing: -1.2px;
         border-bottom: none !important;
-        padding-bottom: 0 !important;
-        text-align: left !important;
+        margin: 0 !important;
+        background: white !important;
       }
-
-      body.print-mode-a4 .r-header-main { font-size: var(--header-main-size) !important; line-height: 1 !important; margin-top: 0 !important; text-align: center !important; }
-      body.print-mode-a4 .r-header-branch { font-size: var(--header-branch-size) !important; line-height: 1 !important; margin-top: 0 !important; margin-bottom: 2px !important; text-align: center !important; }
-      body.print-mode-a4 .r-dash { margin: 2px 0 !important; }
-      body.print-mode-a4 .barcode-container { margin: 0 !important; line-height: 0 !important; text-align: left !important; }
-      body.print-mode-a4 .barcode-container svg { width: 100% !important; display: block !important; margin: 0 !important; }
-      body.print-mode-a4 .barcode-text { font-size: var(--barcode-text-size) !important; letter-spacing: 4.5px !important; display: block; width: 100%; margin-top: 0 !important; padding-top: 0 !important; line-height: 1 !important; font-weight: 400 !important; text-align: center !important; }
-      body.print-mode-a4 .r-www { text-align: center !important; }
-      body.print-mode-a4 .r-membership-justify { letter-spacing: 3px !important; gap: 0 !important; text-align: left !important; }
-      body.print-mode-a4 .r-card-normal { text-align: left !important; letter-spacing: -0.3px; }
-      body.print-mode-a4 .r-trx-normal { text-align: left !important; }
-      body.print-mode-a4 .r-trx-flex { display: flex !important; justify-content: space-between !important; }
-      body.print-mode-a4 .r-date-left { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; letter-spacing: -1px; }
-      body.print-mode-a4 .r-einvoice-remark { font-size: var(--body-font-size) !important; text-align: left !important; letter-spacing: -0.5px; }
-      body.print-mode-a4 .r-einvoice-remark-log { font-size: 10pt !important; text-align: left !important; letter-spacing: -1.4px; }
-      body.print-mode-a4 .r-returned-title { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; letter-spacing: -1.2px; }
-      body.print-mode-a4 .r-returned-detail { font-size: 10pt !important; text-align: left !important; white-space: nowrap !important; letter-spacing: -1.2px; }
 
       /* ===== THERMAL 80mm MODE ===== */
       body.print-mode-thermal {
         background: white !important;
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 4mm !important;
         width: 80mm !important;
         display: block !important;
         -webkit-print-color-adjust: exact;
@@ -866,16 +869,9 @@
       body.print-mode-thermal .receipt-preview-item {
         width: 80mm !important;
         max-width: 80mm !important;
-        font-size: 9pt !important;
-        font-weight: 600 !important;
-        padding: 0 !important;
-        margin: 0 0 4mm 0 !important;
-        line-height: 1.05 !important;
         box-shadow: none !important;
-        letter-spacing: -0.5px;
         border-bottom: none !important;
-        padding-bottom: 0 !important;
-        text-align: left !important;
+        margin: 0 0 4mm 0 !important;
         background: white !important;
         page-break-after: auto !important;
         page-break-inside: auto !important;
@@ -886,23 +882,6 @@
         margin-bottom: 0 !important;
         page-break-after: auto !important;
       }
-
-      body.print-mode-thermal .r-header-main { font-size: 1.6rem !important; line-height: 1 !important; margin-top: 0 !important; text-align: center !important; }
-      body.print-mode-thermal .r-header-branch { font-size: 1.6rem !important; line-height: 1 !important; margin-top: 0 !important; margin-bottom: 2px !important; text-align: center !important; }
-      body.print-mode-thermal .r-dash { margin: 2px 0 !important; }
-      body.print-mode-thermal .barcode-container { margin: 0 !important; line-height: 0 !important; text-align: left !important; }
-      body.print-mode-thermal .barcode-container svg { width: 100% !important; display: block !important; margin: 0 !important; }
-      body.print-mode-thermal .barcode-text { font-size: 0.85rem !important; letter-spacing: 4.5px !important; display: block; width: 100%; margin-top: 0 !important; padding-top: 0 !important; line-height: 1 !important; font-weight: 400 !important; text-align: center !important; }
-      body.print-mode-thermal .r-www { text-align: center !important; }
-      body.print-mode-thermal .r-membership-justify { letter-spacing: 2px !important; gap: 0 !important; text-align: left !important; }
-      body.print-mode-thermal .r-card-normal { text-align: left !important; }
-      body.print-mode-thermal .r-trx-normal { text-align: left !important; }
-      body.print-mode-thermal .r-trx-flex { display: flex !important; justify-content: space-between !important; }
-      body.print-mode-thermal .r-date-left { font-size: 9pt !important; text-align: left !important; white-space: nowrap !important; }
-      body.print-mode-thermal .r-einvoice-remark { font-size: 9pt !important; text-align: left !important; }
-      body.print-mode-thermal .r-einvoice-remark-log { font-size: 9pt !important; text-align: left !important; }
-      body.print-mode-thermal .r-returned-title { font-size: 9pt !important; text-align: left !important; white-space: nowrap !important; }
-      body.print-mode-thermal .r-returned-detail { font-size: 9pt !important; text-align: left !important; white-space: nowrap !important; }
     }
 
     @media (max-width: 1100px) {
@@ -923,8 +902,8 @@
     </svg>
   </div>
   <div style="flex: 1;">
-    <h1>Multi-Receipt → A4 / Thermal Auto Split</h1>
-    <p>Paste log → auto-detect cashier → print A4 atau Thermal 80mm</p>
+    <h1>Multi-Receipt ? A4 / Thermal Auto Split</h1>
+    <p>Paste log ? auto-detect cashier ? print A4 atau Thermal 80mm</p>
   </div>
   <button class="btn-toggle-cashier" id="btnToggleCashier" title="Show/Hide Cashier Box">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -988,7 +967,7 @@
         </div>
         <div style="flex: 1;">
           <h2>Settings</h2>
-          <div class="subtitle">Paper size, PMY code & print margin</div>
+          <div class="subtitle">Paper size, font, PMY code & print margin</div>
         </div>
         <svg class="chevron" id="settingsChevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s; color: var(--c-text-muted);">
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -1005,6 +984,21 @@
             <div style="font-size: 0.7rem; color: var(--c-text-muted); margin-top: 4px;">
               A4 = 2 column split · Thermal = 1 column flow
             </div>
+          </div>
+
+          <div class="field">
+            <label>Receipt Font</label>
+            <select id="fontSelect">
+              <option value="'Roboto Mono', monospace">Roboto Mono (clean)</option>
+              <option value="'JetBrains Mono', monospace">JetBrains Mono (modern)</option>
+              <option value="'IBM Plex Mono', monospace">IBM Plex Mono (professional)</option>
+              <option value="'VT323', monospace">VT323 (retro thermal)</option>
+              <option value="'Share Tech Mono', monospace">Share Tech Mono (nipis)</option>
+              <option value="'Space Mono', monospace">Space Mono (quirky)</option>
+              <option value="'Inconsolata', monospace">Inconsolata (compact)</option>
+              <option value="'Consolas', monospace">Consolas (system)</option>
+              <option value="monospace">System monospace (fallback)</option>
+            </select>
           </div>
 
           <div class="field">
@@ -1118,13 +1112,13 @@
           }
         });
         cashierLoaded = true;
-        console.log(`✅ Loaded ${Object.keys(CASHIER_MAP).length} cashier dari Google Sheet`);
+        console.log(`? Loaded ${Object.keys(CASHIER_MAP).length} cashier dari Google Sheet`);
         renderFloatingCashier();
       } else {
-        console.warn('⚠️ Gagal load cashier:', json.error);
+        console.warn('?? Gagal load cashier:', json.error);
       }
     } catch (err) {
-      console.error('❌ Error load cashier:', err);
+      console.error('? Error load cashier:', err);
     }
   }
 
@@ -1278,6 +1272,7 @@
   const marginRange = document.getElementById('marginRange');
   const marginValue = document.getElementById('marginValue');
   const paperSizeSelect = document.getElementById('paperSizeSelect');
+  const fontSelect = document.getElementById('fontSelect');
 
   const DEFAULT_CASHIER = 'KAHIRUL YAZID';
   const MEASURE_STYLE = 'padding:0 !important; margin:0 !important; border:none !important; box-shadow:none !important;';
@@ -1312,7 +1307,7 @@
     toast.textContent = msg;
     toast.style.cssText = `
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: ${type === 'error' ? '#ef4444' : '#10b981'};
+      background: ${type === 'error' ? '#a83232' : '#4a7c59'};
       color: white; padding: 12px 20px; border-radius: 10px;
       font-size: 0.85rem; font-weight: 600; z-index: 9999;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -1484,115 +1479,129 @@
         data.trxNo = rawTrx;
       }
       else if (line.startsWith('|N')) {
-        const txt = line.substring(2).trim();
-        if (!txt) return;
-        const nClass = 'r-normal';
+  const txt = line.substring(2).trim();
+  if (!txt) return;
+  const nClass = 'r-normal';
 
-        if (txt.includes('Purchases may be exchanged')) data.hasFooterNote = true;
+  if (txt.includes('Purchases may be exchanged')) data.hasFooterNote = true;
 
-        if (isAddress && !txt.includes('SDN BHD') && !txt.includes('19860100')) {
-          data.addressLines.push(txt);
-        }
-        else if (txt.includes('SDN BHD') || txt.includes('19860100') || txt.includes('WWW.')) {
-          isAddress = false;
-          data.companyLines.push(txt);
-        }
-        else if (txt.match(/\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}/)) {
-          if (!data.dateLine) data.dateLine = txt;
-        }
-        else if (txt.includes('----')) {
-          data.bodyItems.push(`<div class="r-dash"></div>`);
-        }
-        else if (txt.match(/DISC:|DISCOUNT/i)) {
-          const match = txt.match(/^(.*?)\s+(-?[\d\.,]+)$/);
-          if (match) {
-            data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
-              <span class="r-item-name">${escapeHtml(match[1])}</span>
-              <span class="r-item-price">${escapeHtml(match[2])}</span>
-            </div>`);
-          } else {
-            data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
-              <span class="r-item-name">${escapeHtml(txt)}</span>
-            </div>`);
-          }
-        }
-        else if (txt.match(/PARKSON CARD\s*:\s*(-?[\d\.,]+)/i)) {
-          const match = txt.match(/PARKSON CARD\s*:\s*(-?[\d\.,]+)/i);
-          data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
-            <span class="r-item-name">PARKSON CARD :</span>
-            <span class="r-item-price">${escapeHtml(match[1])}</span>
-          </div>`);
-        }
-        else if (/^\d{6,12}\s+[A-Z]/i.test(txt)) {
-          if (txt.match(/-?[\d\.,]+$/) && !txt.includes('X')) {
-            const match = txt.match(/^(.*?)\s+(-?[\d\.,]+)$/);
-            if (match) {
-              data.bodyItems.push(`<div class="r-item-row ${nClass}">
-                <span class="r-item-name">${escapeHtml(match[1].trim())}</span>
-                <span class="r-item-price">${escapeHtml(match[2])}</span>
-              </div>`);
-            } else {
-              data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-            }
-          } else {
-            data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-          }
-        }
-        else if (txt.match(/[\d\.,]+\s*X\s*[\d\.,]+(?:RM)?\s*[\d\.,]+/i)) {
-          const parts = txt.match(/([\d\.,]+)\s*X\s*([\d\.,]+)(?:RM)?\s*([\d\.,]+)/i);
-          if (parts) {
-            data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
-              <span class="r-item-name">${escapeHtml(parts[1])} x ${escapeHtml(parts[2])}RM</span>
-              <span class="r-item-price">${escapeHtml(parts[3])}</span>
-            </div>`);
-          } else {
-            data.bodyItems.push(`<div class="${nClass}" style="padding-left:10px;">${escapeHtml(txt)}</div>`);
-          }
-        }
-        else if (txt.startsWith('S/N:')) {
-          data.bodyItems.push(`<div class="${nClass}" style="font-size:0.8rem;">${escapeHtml(txt)}</div>`);
-        }
-        else if (txt.includes('NUMBER OF ITEMS')) {
-          const match = txt.match(/NUMBER OF ITEMS:\s*(\d+)/i);
-          const count = match ? match[1] : '';
-          data.bodyItems.push(`<div class="r-price-row ${nClass}"><span class="r-label">Number of Items:</span><span class="r-value">${escapeHtml(count)}</span></div>`);
-        }
-        else if (txt.match(/NORMAL POINTS|EXTRA POINTS|TOTAL POINTS/i)) {
-          const match = txt.match(/^(.*?)\s*:\s*(-?[\d\.,]+)$/);
-          if (match) {
-            data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
-              <span class="r-item-name">${escapeHtml(match[1].trim())} :</span>
-              <span class="r-item-price">${escapeHtml(match[2].trim())}</span>
-            </div>`);
-          } else {
-            data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-          }
-        }
-        else if (txt.match(/BALANCE|REDEEMABLE/i)) {
-          const match = txt.match(/^(.*?)\s*:\s*(-?[\d\.,A-Z]+)$/);
-          if (match) {
-            data.bodyItems.push(`<div class="r-nowrap ${nClass}">${escapeHtml(match[1].trim())} :${escapeHtml(match[2].trim())}</div>`);
-          } else {
-            data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-          }
-        }
-        else if (txt.match(/MEMBERSHIP NUMBER/i)) {
-          const parts = txt.split(':');
-          if (parts.length >= 2) {
-            const label = parts[0].trim() + ' :';
-            const value = parts.slice(1).join(':').trim();
-            data.bodyItems.push(`<div class="r-membership-justify"><span>${escapeHtml(label)}</span><span>${escapeHtml(value)}</span></div>`);
-          } else {
-            data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-          }
-        }
-        else if (txt.match(/APV AS AT/i)) {
-          data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-        }
-        else {
-          data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
-        }
-      }
+  // ===== HANDLER SKU8 — PALING ATAS =====
+  if (/^\d{8}\s+[A-Z]/i.test(txt)) {
+    const priceMatch = txt.match(/\s(-?[\d\.,]+\.[\d]{2})$/);
+    if (priceMatch && !/\d\s*X\s*\d/i.test(txt)) {
+      const price = priceMatch[1];
+      const name = txt.substring(0, txt.length - price.length - 1).trim();
+      data.bodyItems.push(`<div class="r-item-row ${nClass}">
+        <span class="r-item-name">${escapeHtml(name)}</span>
+        <span class="r-item-price">${escapeHtml(price)}</span>
+      </div>`);
+      return;
+    }
+  }
+
+  // ===== HANDLER SKU6 =====
+  if (/^\d{6}\s+[A-Z]/i.test(txt)) {
+    const priceMatch = txt.match(/\s(-?[\d\.,]+\.[\d]{2})$/);
+    if (priceMatch && !/\d\s*X\s*\d/i.test(txt)) {
+      const price = priceMatch[1];
+      const name = txt.substring(0, txt.length - price.length - 1).trim();
+      data.bodyItems.push(`<div class="r-item-row ${nClass}">
+        <span class="r-item-name">${escapeHtml(name)}</span>
+        <span class="r-item-price">${escapeHtml(price)}</span>
+      </div>`);
+      return;
+    }
+  }
+
+  // ===== HANDLER LAIN =====
+  if (isAddress && !txt.includes('SDN BHD') && !txt.includes('19860100')) {
+    data.addressLines.push(txt);
+  }
+  else if (txt.includes('SDN BHD') || txt.includes('19860100') || txt.includes('WWW.')) {
+    isAddress = false;
+    data.companyLines.push(txt);
+  }
+  else if (txt.match(/\d{2}\/\d{2}\/\d{2} \d{2}:\d{2}/)) {
+    if (!data.dateLine) data.dateLine = txt;
+  }
+  else if (txt.includes('----')) {
+    data.bodyItems.push(`<div class="r-dash"></div>`);
+  }
+  else if (txt.match(/DISC:|DISCOUNT/i)) {
+    const match = txt.match(/^(.*?)\s+(-?[\d\.,]+)$/);
+    if (match) {
+      data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
+        <span class="r-item-name">${escapeHtml(match[1])}</span>
+        <span class="r-item-price">${escapeHtml(match[2])}</span>
+      </div>`);
+    } else {
+      data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
+        <span class="r-item-name">${escapeHtml(txt)}</span>
+      </div>`);
+    }
+  }
+  else if (txt.match(/PARKSON CARD\s*:\s*(-?[\d\.,]+)/i)) {
+    const match = txt.match(/PARKSON CARD\s*:\s*(-?[\d\.,]+)/i);
+    data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
+      <span class="r-item-name">PARKSON CARD :</span>
+      <span class="r-item-price">${escapeHtml(match[1])}</span>
+    </div>`);
+  }
+  else if (txt.match(/[\d\.,]+\s*X\s*[\d\.,]+(?:RM)?\s*[\d\.,]+/i)) {
+    const parts = txt.match(/([\d\.,]+)\s*X\s*([\d\.,]+)(?:RM)?\s*([\d\.,]+)/i);
+    if (parts) {
+      data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
+        <span class="r-item-name">${escapeHtml(parts[1])} x ${escapeHtml(parts[2])}RM</span>
+        <span class="r-item-price">${escapeHtml(parts[3])}</span>
+      </div>`);
+    } else {
+      data.bodyItems.push(`<div class="${nClass}" style="padding-left:10px;">${escapeHtml(txt)}</div>`);
+    }
+  }
+  else if (txt.startsWith('S/N:')) {
+    data.bodyItems.push(`<div class="${nClass}" style="font-size:0.8rem;">${escapeHtml(txt)}</div>`);
+  }
+  else if (txt.includes('NUMBER OF ITEMS')) {
+    const match = txt.match(/NUMBER OF ITEMS:\s*(\d+)/i);
+    const count = match ? match[1] : '';
+    data.bodyItems.push(`<div class="r-price-row ${nClass}"><span class="r-label">Number of Items:</span><span class="r-value">${escapeHtml(count)}</span></div>`);
+  }
+  else if (txt.match(/NORMAL POINTS|EXTRA POINTS|TOTAL POINTS/i)) {
+    const match = txt.match(/^(.*?)\s*:\s*(-?[\d\.,]+)$/);
+    if (match) {
+      data.bodyItems.push(`<div class="r-item-row ${nClass}" style="padding-left:10px;">
+        <span class="r-item-name">${escapeHtml(match[1].trim())} :</span>
+        <span class="r-item-price">${escapeHtml(match[2].trim())}</span>
+      </div>`);
+    } else {
+      data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
+    }
+  }
+  else if (txt.match(/BALANCE|REDEEMABLE/i)) {
+    const match = txt.match(/^(.*?)\s*:\s*(-?[\d\.,A-Z]+)$/);
+    if (match) {
+      data.bodyItems.push(`<div class="r-nowrap ${nClass}">${escapeHtml(match[1].trim())} :${escapeHtml(match[2].trim())}</div>`);
+    } else {
+      data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
+    }
+  }
+  else if (txt.match(/MEMBERSHIP NUMBER/i)) {
+    const parts = txt.split(':');
+    if (parts.length >= 2) {
+      const label = parts[0].trim() + ' :';
+      const value = parts.slice(1).join(':').trim();
+      data.bodyItems.push(`<div class="r-membership-justify"><span>${escapeHtml(label)}</span><span>${escapeHtml(value)}</span></div>`);
+    } else {
+      data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
+    }
+  }
+  else if (txt.match(/APV AS AT/i)) {
+    data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
+  }
+  else {
+    data.bodyItems.push(`<div class="${nClass}">${escapeHtml(txt)}</div>`);
+  }
+}
       else if (line.startsWith('|BC')) {
         const txt = line.substring(3).trim();
         const bcClass = 'r-bold';
@@ -1788,7 +1797,7 @@
     ].filter(x => x.html);
 
     const temp = document.createElement('div');
-    temp.style.cssText = 'position:absolute; left:-99999px; top:0; width:3.2in;';
+    temp.style.cssText = 'position:absolute; left:-99999px; top:0; width:80mm;';
     document.body.appendChild(temp);
 
     temp.innerHTML = `<div class="receipt-preview-item" style="${MEASURE_STYLE}">${r.headerHtml}</div>`;
@@ -1879,7 +1888,7 @@
     const A4_COLUMN_H = getA4ColumnHeight();
 
     const hiddenWrap = document.createElement('div');
-    hiddenWrap.style.cssText = 'position:absolute; left:-99999px; top:0; visibility:hidden; width:3.2in;';
+    hiddenWrap.style.cssText = 'position:absolute; left:-99999px; top:0; visibility:hidden; width:80mm;';
     document.body.appendChild(hiddenWrap);
     hiddenWrap.innerHTML = receipts.map(r => buildFullHtml(r).replace('class="receipt-preview-item"', `class="receipt-preview-item" style="${MEASURE_STYLE}"`)).join('');
     const fullItems = hiddenWrap.querySelectorAll('.receipt-preview-item');
@@ -1964,7 +1973,7 @@
   });
   pmyCodeInput.addEventListener('input', updatePreview);
 
-  // ============ PAPER SIZE + PRINT ============
+  // ============ PAPER SIZE + FONT SWITCHER ============
   const savedPaper = localStorage.getItem('paperSize') || 'a4';
   paperSizeSelect.value = savedPaper;
   applyPageSize(savedPaper);
@@ -1990,6 +1999,20 @@
     localStorage.setItem('paperSize', size);
     applyPageSize(size);
     showToast('Paper size: ' + (size === 'a4' ? 'A4' : 'Thermal 80mm'), 'success');
+  });
+
+  // Font switcher
+  const savedFont = localStorage.getItem('receiptFont');
+  if (savedFont) {
+    fontSelect.value = savedFont;
+    document.documentElement.style.setProperty('--receipt-font', savedFont);
+  }
+
+  fontSelect.addEventListener('change', (e) => {
+    const font = e.target.value;
+    document.documentElement.style.setProperty('--receipt-font', font);
+    localStorage.setItem('receiptFont', font);
+    showToast('Font ditukar — preview & print akan update', 'success');
   });
 
   generateBtn.addEventListener('click', (e) => {
