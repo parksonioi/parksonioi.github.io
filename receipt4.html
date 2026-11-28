@@ -2022,7 +2022,7 @@ cashierHtml += `<div class="r-normal">${escapeHtml(pmy)}</div>`;
     showToast('Paper size: ' + (size === 'a4' ? 'A4' : 'Thermal 80mm'), 'success');
   });
 
-  // Font switcher
+    // Font switcher
   const savedFont = localStorage.getItem('receiptFont');
   if (savedFont) {
     fontSelect.value = savedFont;
@@ -2033,4 +2033,94 @@ cashierHtml += `<div class="r-normal">${escapeHtml(pmy)}</div>`;
     const font = e.target.value;
     document.documentElement.style.setProperty('--receipt-font', font);
     localStorage.setItem('receiptFont', font);
-    showToast('Font ditukar 
+    showToast('Font ditukar — preview & print akan update', 'success');
+  });
+
+  generateBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    updatePreview();
+
+    const size = paperSizeSelect.value;
+    applyPageSize(size);
+    document.body.classList.remove('print-mode-a4', 'print-mode-thermal');
+    document.body.classList.add(size === 'thermal' ? 'print-mode-thermal' : 'print-mode-a4');
+
+    document.documentElement.style.setProperty('--print-margin', marginRange.value + 'mm');
+
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => {
+        document.body.classList.remove('print-mode-a4', 'print-mode-thermal');
+      }, 1000);
+    }, 400);
+  });
+
+  marginRange.addEventListener('input', function() {
+    const val = this.value;
+    marginValue.textContent = val + 'mm';
+    document.documentElement.style.setProperty('--print-margin', val + 'mm');
+  });
+
+  // ============ SETTINGS TOGGLE ============
+  const settingsToggle = document.getElementById('settingsToggle');
+  const settingsBody = document.getElementById('settingsBody');
+  const settingsChevron = document.getElementById('settingsChevron');
+
+  settingsToggle.addEventListener('click', () => {
+    const isOpen = settingsBody.style.display !== 'none';
+    settingsBody.style.display = isOpen ? 'none' : 'block';
+    settingsChevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  });
+
+  // ============ TOGGLE FLOATING CASHIER ============
+  const floatingCashierEl = document.getElementById('floatingCashier');
+  const btnToggleCashier = document.getElementById('btnToggleCashier');
+
+  const cashierBoxState = localStorage.getItem('cashierBoxVisible') !== 'hidden';
+
+  function applyCashierBoxState(visible) {
+    if (visible) {
+      floatingCashierEl.classList.remove('hidden');
+      btnToggleCashier.classList.add('active');
+    } else {
+      floatingCashierEl.classList.add('hidden');
+      btnToggleCashier.classList.remove('active');
+    }
+    localStorage.setItem('cashierBoxVisible', visible ? 'visible' : 'hidden');
+  }
+
+  applyCashierBoxState(cashierBoxState);
+
+  document.getElementById('btnCloseFc').addEventListener('click', () => {
+    applyCashierBoxState(false);
+  });
+
+  btnToggleCashier.addEventListener('click', () => {
+    const isCurrentlyVisible = !floatingCashierEl.classList.contains('hidden');
+    applyCashierBoxState(!isCurrentlyVisible);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+      e.preventDefault();
+      const isCurrentlyVisible = !floatingCashierEl.classList.contains('hidden');
+      applyCashierBoxState(!isCurrentlyVisible);
+    }
+  });
+
+  // ============ INIT ============
+  async function init() {
+    await loadCashierMap();
+    rebuildCashierInputs();
+    updatePreview();
+    setInterval(loadCashierMap, 5 * 60 * 1000);
+  }
+
+  if (document.readyState === 'complete') {
+    init();
+  } else {
+    window.addEventListener('load', init);
+  }
+</script>
+</body>
+</html>
