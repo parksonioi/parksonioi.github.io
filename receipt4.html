@@ -2022,7 +2022,7 @@ cashierHtml += `<div class="r-normal">${escapeHtml(pmy)}</div>`;
     showToast('Paper size: ' + (size === 'a4' ? 'A4' : 'Thermal 80mm'), 'success');
   });
 
-    // Font switcher
+  // Font switcher
   const savedFont = localStorage.getItem('receiptFont');
   if (savedFont) {
     fontSelect.value = savedFont;
