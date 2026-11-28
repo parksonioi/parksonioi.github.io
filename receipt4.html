@@ -1781,8 +1781,8 @@ footerNoteHtml += `</div>`;
     promoHtml += `<div class="r-normal" style="width: 100%; text-align: left;">Terms Apply</div>`;
     promoHtml += `<div class="r-bold" style="width: 100%; text-align: left;">****************************************</div>`;
 
-    let cashierHtml = `<div class="r-section-other"><div class="r-normal">Cashier Name : ${escapeHtml(cashier)}</div>`;
-cashierHtml += `<div class="r-normal">${escapeHtml(pmy)}</div></div>`;
+    let cashierHtml = `<div class="r-section-other"><div class="r-normal">Cashier Name : ${escapeHtml(cashier)}</div></div>`;
+cashierHtml += `<div class="r-normal">${escapeHtml(pmy)}</div>`;
 
     return { headerHtml, bodyItems: data.bodyItems, footerNoteHtml, promoHtml, cashierHtml, footerHtml, barcodeDisplayText };
   }
